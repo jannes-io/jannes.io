@@ -1,0 +1,192 @@
+import { ChapterNavigator } from "../../src/Components";
+
+# PHP in HTML
+
+Now that we've got a basic understanding of PHP and before expanding your PHP knowledge,
+we should take a look at how we can actually use PHP on a website. So far you haven't accomplished much in terms of creating an actual webpage.
+Let's give our `index.php` file a basic HTML structure. Replace everything (including any `<?php ?>` tags) with the following content:
+
+```html
+<html lang="en">
+<head>
+<title>My cool PHP website</title>
+</head>
+<body>
+<h3>PHP in HTML or is it HTML in PHP?</h3>
+</body>
+</html>
+```
+
+As you can see, it simply renders the HTML in the browser. Since we didn't define any PHP tags, PHP has nothing to do and simply prints the HTML to the browser.
+Now let's print our previous "Hello, World!" example in this file. For brevity only the contents of `<body>` are shown in the code sample.
+
+```php
+<body>
+<h3>PHP in HTML or is it HTML in PHP?</h1>
+<?php echo 'Hello, World!' ?>
+</body>
+```
+
+And voila! You just executed a piece of PHP inside HTML.
+
+## Printing HTML with PHP
+
+Sometimes it's required to print a piece of HTML code using PHP. Any PHP string that is `echo`'d to the document will be interpreted as HTML code.
+Therefor if your string contains any HTML tags, they will be rendered accordingly.
+
+Let's look at an example:
+
+```php
+<body>
+<?php
+$html = '<p>I am a <strong>PHP string</strong> containing <strong>HTML tags</strong></p>';
+echo $html;
+?>
+</body>
+```
+
+If you run this code, you can see that our `p` and `strong` tags are interpreted by the browser and the text is shown in bold.
+In general, this is considered bad practice, as this could be extremely dangerous and could introduce security issues.
+
+Let's assume a user has the username of `<a href="https://some-dangerous-virus.com">Free money!</a>` and we printed their username to the screen, all the users on our website would see their username as a link to a bad website.
+This may seem quite mild, but this could also include javascript code, which is then executed on the user's browser.
+This is referred to as "XSS" or "Cross Site Scripting", which is a common type of attack that malicious users employ.
+
+Soon we will learn how to safely get data from a user, and prevent these types of vulnerabilities in our code.
+
+## Alternative control structure syntax
+
+When mixing PHP and HTML, our control structures take on a different look. They're still functionally completely the same but the syntax changes slightly.
+This isn't a requirement, but it does make your code much easier to read.
+
+Consider the following snippet:
+```php
+<body>
+<?php
+$numbers = [];
+for ($i = 0; $i <= 20; $i++) {
+    $numbers[] = $i;
+}
+?>
+
+<h2>Even numbers</h2>
+<ul>
+    <?php foreach ($numbers as $n) { ?>
+        <?php if ($n % 2 === 0) { ?>
+            <li>
+                <?php echo $n ?>
+            </li>
+        <?php } ?>
+    <?php } ?>
+</ul>
+
+<h2>Odd numbers</h2>
+<ul>
+    <?php foreach ($numbers as $n) { ?>
+        <?php if ($n % 2 === 1) { ?>
+            <li>
+                <?php echo $n ?>
+            </li>
+        <?php } ?>
+    <?php } ?>
+</ul>
+</body>
+```
+
+It creates 2 lists, one containing all the even numbers from 0 to 20, and the other all the odd numbers.
+This is starting to get hard to read, especially the closing braces since they're hidden and surrounded by php tags.
+So let's rewrite this snippet to use the alternative control structure syntax.
+
+```php
+<body>
+<?php
+$numbers = [];
+for ($i = 0; $i <= 20; $i++) {
+    $numbers[] = $i;
+}
+?>
+
+<h2>Even numbers</h2>
+<ul>
+    <?php foreach ($numbers as $n): ?>
+        <?php if ($n % 2 === 0): ?>
+            <li>
+                <?php echo $n ?>
+            </li>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</ul>
+
+<h2>Odd numbers</h2>
+<ul>
+    <?php foreach ($numbers as $n): ?>
+        <?php if ($n % 2 === 1): ?>
+            <li>
+                <?php echo $n ?>
+            </li>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</ul>
+</body>
+```
+
+So in essence, in the opening statement we replace the opening brace (`{`) with a colon (`:`).
+And the closing brace (`}`) is replaced with `end` followed by the control structure. I.E. `endforeach;`.
+Now we can clearly see when the control structure is closed. In big files containing hundreds lines of code, this can significantly decrease the time for a developer to see what is going in.
+And in turn, they will be able to fix bugs or create new features more quickly.
+
+### HTML/PHP conventions
+
+As you can see from all the examples and exercises so far, there are an unlimited amount of ways to achieve the same result.
+Later on in this course we'll also touch on code-style, but for now we'll focus on mixing HTML and PHP.
+
+#### Grouping PHP sections
+
+The general rule is that if you need multiple lines of PHP code, except for control structures, you can use a single opening and closing tag surrounding it.
+
+**Bad**:
+```php
+<?php $numbers = []; ?>
+<?php for ($i = 0; $i <= 20; $i++): ?>
+    <?php $numbers[] = $i; ?>
+<?php endfor; ?>
+```
+
+**Good**:
+```php
+<?php
+$numbers = [];
+for ($i = 0; $i <= 20; $i++) {
+    $numbers[] = $i;
+}
+?>
+```
+
+#### Echo'ing HTML
+
+Another consideration is printing HTML from PHP. A lot of the time we see HTML code being included in echo statements.
+The recommendation here is to keep `echo` statements as localised as possible. Let's look at 2 examples:
+
+**Bad**:
+```php
+<body>
+<?php
+$link = 'https://example.com';
+$someData = 'example-link';
+echo '<a href="' . $link . '" data-some="' . $someData .  '">My link</a>';
+?>
+</body>
+```
+
+**Good**:
+```php
+<body>
+<?php
+$link = 'https://example.com';
+$someData = 'example-link';
+?>
+<a href="<?php echo $link ?>" data-some="<?php echo $someData ?>">My link</a>
+</body>
+```
+
+<ChapterNavigator prev="/php/03-control-structures" />

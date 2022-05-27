@@ -1,0 +1,84 @@
+import { ChapterNavigator, Link } from '../../src/Components';
+
+# What is PHP?
+
+## Dissection of a website
+
+Websites are split up into 2 sections. Frontend and backend, or in other words, code that executes on your browser, and code that executes on a server.
+HTML, CSS and JavaScript are all things that are evaluated and executed in the browser.
+
+Take for example this piece of HTML:
+```html
+<p>Hello world</p>
+```
+
+This instructs the browser to render a paragraph with the text "Hello world". But what if we want to do more?
+Let's say we want to execute complex code and retrieve data from different sources to combine them into one page?
+
+This is where the backend or server-side code comes in. And this is also where PHP fits in.
+
+## Why use PHP?
+
+There are many options when it comes to picking a backend language. Nowadays, there are many strong competitors for PHP, like JavaScript, Go, Rust, Java, C#,... so why pick PHP?
+PHP is designed from the ground up to be a server-side language. It has many features out of the box that other languages do not easily provide.
+
+PHP is one of the easiest languages to learn. While it is not the fastest, most elegant, safest,... it gets the job done. PHP is versatile, maintainable and scalable.
+
+## Required Software
+
+### Code editor
+
+There are many code editors available and choosing your tool is a hot debate in development communities. You could write your entire application in notepad (Windows) or TextEdit (MacOS) but it's not very comfortable.
+For sake of ease and consistency while following this course we recommend Visual Studio Code, or vscode in short.
+
+* <Link href="https://code.visualstudio.com/">Download Visual Studio Code</Link>
+
+Visual Studio Code is still just a code editor. If you want even more from your development environment you might be looking for an IDE (Integrated Development Environment).
+<Link href="https://www.jetbrains.com/phpstorm/" target="_blank">PHPStorm</Link> is a great choice for any web related development, not just PHP.
+We wanted this course to remain accessible and most importantly, completely free hence why we're going to recommend vscode. IDEs typically come at a cost. A well deserved cost but a cost nonetheless.
+
+### Docker
+
+Since we've been talking about "servers" already, it may come to no surprise that we're going to need some tools to turn our computer into a local development server.
+There are many solutions to creating a server that can run PHP. For simplicity, we will be using Docker. But other solutions such as WAMP, XAMPP, ... exists.
+
+Docker is a simple yet powerful way to set up a development environment without having to install each and every bit of software separately.
+This makes it easy to share a reproducible environment, and Docker will make it much easier later when you want to deploy your application to "the cloud".
+Docker can do much more than just run PHP code, we suggest you learn more about Docker later.
+
+* <Link href="https://www.docker.com/products/docker-desktop/">Download Docker Desktop</Link>
+* <Link href="https://github.com/jannes-io/php-course-docker">Download our basic LAMP stack</Link>
+
+Install Docker Desktop and download the GitHub starter repository. If you're new to GitHub, use the "Code" button, and select "Download ZIP". If you've used Git before, you can also clone the repository instead.
+
+<img src="/php/01-github.png" />
+
+Extract this ZIP file to a destination of your choosing. Go inside your folder, you will see 2 items: `docker-compose.yml` and `src`.
+
+Now it's time to boot up our environment! The first time we want to run our environment we'll have to execute a command using our console or terminal.
+When that has been done once, it will be visible in Docker Desktop and we can launch it from there later.
+
+1. Ensure Docker Desktop is running,
+2. Open the project directory (php-course-docker) in vscode,
+3. In the top bar of vscode, select "Terminal" and open a "New Terminal",
+
+<img src="/php/01-open-terminal.png" />
+
+4. Inside the terminal (appears on the bottom) write the following command:
+```
+docker-compose up -d
+```
+5. Wait for Docker to finish downloading and creating the required images and containers,
+
+<img src="/php/01-docker-compose.png" />
+
+6. Open up your internet browser of choice and navigate to `http://localhost/` (or `http://127.0.0.1/`),
+7. If you did everything correctly, you should see a completely blank page.
+
+The next time you want to start your development server, you can do so from within Docker Desktop. Simply hit "start" in the "Containers / Apps" section.
+
+<img src="/php/01-docker-desktop.png" />
+
+Congratulations! You've just ran your first PHP script. Now let's get into actually writing some PHP.
+
+<ChapterNavigator prev="/php" next="/php/02-first-php-script" />

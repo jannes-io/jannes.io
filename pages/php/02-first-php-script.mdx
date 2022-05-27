@@ -1,0 +1,224 @@
+import { ChapterNavigator, Exercise } from "../../src/Components";
+import php from '../../src/exercises/php';
+
+# First PHP Script
+
+Before we mix in any HTML or CSS, let's take a look at some basic PHP. You can follow along in your starter project
+by opening `src/index.php`. As you can see it already starts us off with an opening tag (`<?php`) .
+
+## Echo (echo, echo, ...)
+
+Let's start with the classic task of printing "Hello, World!" to our screen. Inside our PHP file, go ahead and write the following:
+```php
+<?php
+echo 'Hello, World!';
+````
+
+When you refresh your browser, you should see "Hello, World!" on the page. Note that every line in PHP must end with `;`.
+Don't worry, PHP will tell you if you're missing it. Try it out by removing the semicolon (`;`) at the end of the line and refreshing your browser.
+
+You should see something along the lines of:
+```
+Parse error: syntax error, unexpected end of file, expecting "," or ";" in /var/www/html/index.php on line 3
+```
+
+Let's dissect this error, as a beginner you most likely will see this a lot until you build up that muscle memory to press `;` after each line.
+
+```
+Parse error: syntax error
+```
+This means PHP is unable to run your script because it is malformed. Syntax errors occur usually due to misspelling, forgetting certain characters such as our semicolon, and so on.
+
+```
+unexpected end of file
+```
+
+This part tells you that PHP has reached the end of the file without finding what it's looking for. There are other variants of this too. For example modify your code to have 2 lines without semicolons:
+
+```php
+<?php
+echo 'Hello, World!'
+echo 'Hello, World!'
+````
+
+Now when you refresh the page, it will replace that part with something like this:
+
+```
+unexpected token "echo"
+```
+
+Again this just means that PHP has encountered a "token" or piece of code that it wasn't expecting yet. The same way it wasn't expecting the end of the file in our previous example.
+
+```
+expecting "," or ";"
+```
+
+The next section tells us what it was actually expecting. In this case the only valid symbols that can succeed our statement are `,` and `;`. So this is a clear indicator we're missing our semicolon.
+
+```
+in /var/www/html/index.php on line 3
+```
+
+The last part of the error tells us where the error occurred. In this case the error happened when we gave PHP something that it wasn't expecting yet, therefor the error didn't occur on the actual line
+that the error happened on, but rather on the next line. This may be confusing at times but PHP is fairly good at giving you a descriptive error, so you can find it and correct it.
+
+Also not that the path to our file is not the actual path on your computer. Every time you see `/var/www/html` it refers to the root of our PHP project.
+In our case, the root of our PHP project is the `src` directory. So you can think of `/var/www/html` as `path-to-your-project/php-course-docker/src`
+
+Being able to read error messages is crucial to being comfortable in a language. Error messages are usually fairly unique to your application.
+Searching for them on the internet more often than not will not produce anything helpful. Only generic error messages are well documented.
+Later on when we start to encounter more complex errors the message will contain a lot of our code, if you constantly need to look up specific error messages you will quickly become demotivated.
+So the next time you see an error, really try to read it, dissect its parts, and usually PHP will attempt to tell you exactly what it needs.
+
+## PHP Tag
+
+The PHP tags lets PHP know that you want to execute a piece of PHP code.
+There are 2 different variants of the PHP tag, and just like with HTML it consists of an opening tag, and a closing tag.
+
+```php
+<?php ?>
+<?= ?>
+```
+
+* `<?php ?>` will execute any PHP code between the tag,
+* `<?= ?>` is called the "Shorthand PHP open tag" and is an extension of the regular PHP tag, but also prints the result to the page.
+
+The following 2 lines of code are functionally identical:
+```php
+<?php echo 'Hello, World!' ?>
+<?= 'Hello, World!' ?>
+```
+
+The shorthand open tag can be disabled on certain servers, that's why it's preferred to always use the regular tag in combination with `echo`.
+Just know it exists if you ever come across it.
+
+Your script should currently look like this:
+```php
+<?php
+echo 'Hello, World!';
+```
+
+Now you may ask yourself, we just looked at the PHP tag and it always consists of an opening (`<?php`) and a closing tag (`?>`).
+But here we only have the opening tag and it still works?
+
+This is because PHP will always automatically add a closing tag to the end of a PHP file.
+So as long as we're only executing PHP and not mixing in any HTML, we can get away with dropping it.
+Later this will also become more apparent and useful when we start using classes and functions.
+
+## Variables
+
+Our current script isn't very useful, we could have accomplished that with plain HTML. So let's do something HTML cannot do, storing data!
+
+A variable is a piece of information that is stored in the memory of your server. They can be used to temporarily store data and assign a name so it's easier for the programmer to understand what's going on.
+Variables in PHP always start with the dollar sign (`$`) followed by any name. For example `$hello`.
+So let's extend our code to print "Hello, World!" multiple times without having to type "Hello, World!" each time.
+
+To create a variable, start with the dollar sign (`$`), followed by the name of the variable (`hello`), then an equals sign (`=`), and finally the value (`'Hello, World!'`).
+
+```php
+<?php
+$hello = 'Hello, World!';
+echo $hello;
+echo $hello;
+echo $hello;
+```
+
+Refresh the page, and you should now see "Hello, World!Hello, World!Hello, World!" in your browser.
+
+### Data Types (brief overview)
+
+PHP is a dynamically typed language. If you have any prior experience in other programming languages you may have heard of different types such as "int", "string", "boolean",... before.
+In dynamically typed languages such as PHP a variable's type is assigned on runtime, in other words, when the code is executed. And it can even change on runtime! This is considered bad practice but that's for later.
+Let's look at the different data types we've got available to us.
+
+```php
+<?php
+$string = 'Hello';
+$bool = true;
+$int = 1;
+$float = 0.5;
+$array = ['Hello', true, 1, 0.5];
+$object = new stdClass();
+$nothing = null;
+```
+
+<dl>
+  <dt>string</dt>
+  <dd>A string value represents a piece of text. This can include a single character, multiple characters, or no characters at all. String values are always enclosed in quotes.</dd>
+  <dt>bool</dt>
+  <dd>A bool, or boolean value, is a binary value which can be either `true` or `false`.</dd>
+  <dt>int</dt>
+  <dd>Integers are whole numbers. They can be both positive and negative.</dd>
+  <dt>float</dt>
+  <dd>Floats, or a floating point number are numbers that include a decimal point. Floats take up more memory space and are more inefficient to work with than integers.</dd>
+  <dt>array</dt>
+  <dd>For now just know that arrays can hold multiple values. We will go more in-dept later on in this course.</dd>
+  <dt>objects</dt>
+  <dd>Objects can also hold multiple values, like arrays, we will go more in-dept later on.</dd>
+  <dt>null</dt>
+  <dd>Null is just an empty value. It holds quite literally "nothing". Null is often used for non-existing items.</dd>
+</dl>
+
+These data types form the core building blocks of all data you can store in the server's memory. For testing purposes we will use `var_dump` instead of `echo` to print items to the screen.
+Using `var_dump` will not only tell you the value of the variable, like `echo` did, but it will also give you information about its type.
+Let's modify our code to use `var_dump` instead.
+
+```php
+<?php
+$hello = 'Hello, World!';
+var_dump($hello);
+```
+
+After a page refresh, you should see:
+
+```
+string(13) "Hello, World!"
+```
+
+`var_dump` tells us that the variable is a `string` of length `13` consisting of `Hello, World!`.
+
+<Exercise title="Try using var_dump on all the data types we listed before and see what the results are to familiarise yourself with them." />
+
+## Type Casting
+
+It is also possible to change a variable's type. This action is called Type Casting. For example if we have a string variable `$str = '123'` we can cast this to an integer using `(int)`.
+
+Change your code to match the following snippet.
+
+```php
+<?php
+$str = '123';
+var_dump($str);
+$int = (int)$str;
+var_dump($int);
+```
+
+You can see that `$str` was first a `string` with value `'123'`. But during the assignment of `$int` we type cast to `int` using `(int)`. Now the value of `$int` is an integer instead of a string.
+
+Variables can be used to do any type of calculation through the use of operators. Each data type comes with its own set of operators.
+We won't go too in-depth for now, in fact, you should already know most of the basic operators such as addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`).
+
+For an extensive list of all operators, visit the [PHP manual on operators](https://www.php.net/manual/en/language.operators.php).
+
+## Practice makes perfect
+
+Complete the following exercises to test your understanding of variables and operators.
+
+<Exercise
+  codeSolution
+  language="php"
+  title="Create 2 variables $a, and $b, give them integer values of 5 and 10 respectively. Add them together and store the result in $c. Then var_dump the result of $c."
+>
+  {php.chapter2.Addition}
+</Exercise>
+
+<Exercise
+  codeSolution
+  language="php"
+  title="Have 2 variables, $firstName and $lastName, and print the full name to the screen. For example if $firstName is 'John', $lastName is 'Doe', the result on-screen should be John Doe"
+  hints={['You can use the concatenation operator "." to glue 2 strings together']}
+>
+  {php.chapter2.Concatenation}
+</Exercise>
+
+<ChapterNavigator prev="/php/01-what-is-php" next="/php/03-control-structures" />
