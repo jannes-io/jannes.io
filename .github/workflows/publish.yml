@@ -5,6 +5,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-west-1
+      S3_BUCKET_NAME: jannes.io
+      CLOUDFRONT_DISTRIBUTION_ID: E2S1UP02J7KC1K
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -15,9 +21,3 @@ jobs:
       - run: yarn ssg
       - run: aws s3 sync --delete ./out/ s3://$S3_BUCKET_NAME/
       - run: aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths /\*
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-1
-          S3_BUCKET_NAME: jannes.io
-          CLOUDFRONT_DISTRIBUTION_ID: E2S1UP02J7KC1K
