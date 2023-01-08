@@ -1,5 +1,5 @@
-import { ChapterNavigator, Exercise } from "../../src/Components";
-import php from '../../src/exercises/php';
+import { ChapterNavigator, Exercise, Link } from '../../../src/Components';
+import php from '../../../src/exercises/php';
 
 # First PHP Script
 
@@ -198,7 +198,7 @@ You can see that `$str` was first a `string` with value `'123'`. But during the 
 Variables can be used to do any type of calculation through the use of operators. Each data type comes with its own set of operators.
 We won't go too in-depth for now, in fact, you should already know most of the basic operators such as addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`).
 
-For an extensive list of all operators, visit the [PHP manual on operators](https://www.php.net/manual/en/language.operators.php).
+For an extensive list of all operators, visit the <Link href="https://www.php.net/manual/en/language.operators.php">PHP manual on operators</Link>.
 
 ## Practice makes perfect
 
@@ -215,10 +215,10 @@ Complete the following exercises to test your understanding of variables and ope
 <Exercise
   codeSolution
   language="php"
-  title="Have 2 variables, $firstName and $lastName, and print the full name to the screen. For example if $firstName is 'John', $lastName is 'Doe', the result on-screen should be John Doe"
+  title="Have 2 variables, $firstName and $lastName, and print the full name to the screen. For example if $firstName is 'John', $lastName is 'Doe', the result on-screen should be 'John Doe'"
   hints={['You can use the concatenation operator "." to glue 2 strings together']}
 >
   {php.chapter2.Concatenation}
 </Exercise>
 
-<ChapterNavigator prev="/php/01-what-is-php" next="/php/03-control-structures" />
+<ChapterNavigator prev="/courses/php-beginners/01-what-is-php" next="/courses/php-beginners/03-control-structures" />

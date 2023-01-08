@@ -66,12 +66,12 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link
 
   const router = useRouter();
   const pathname = typeof href === 'string' ? href : href.pathname;
-  const className = clsx(classNameProps, {
-    [activeClassName]: router.pathname === pathname && activeClassName,
-  });
+  const isExternal = typeof href === 'string'
+    && (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0);
 
-  const isExternal =
-    typeof href === 'string' && (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0);
+  const className = clsx(classNameProps, {
+    [activeClassName]: isExternal ? '' : (router.pathname === pathname && activeClassName),
+  });
 
   if (isExternal) {
     if (noLinkStyle) {

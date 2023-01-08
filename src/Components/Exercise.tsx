@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -14,7 +14,7 @@ interface IExerciseProps {
   codeSolution?: boolean
 }
 
-export const Exercise: React.FC<IExerciseProps> = ({
+export const Exercise: React.FC<PropsWithChildren<IExerciseProps>> = ({
   title,
   hints,
   language,

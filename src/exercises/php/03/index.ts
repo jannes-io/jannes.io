@@ -1,3 +1,4 @@
+// @ts-ignore
 import MultipleArray from './MultipleArray.ex.php';
 
 const chapter3 = {

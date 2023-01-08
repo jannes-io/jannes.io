@@ -1,5 +1,5 @@
-import { ChapterNavigator, Exercise } from '../../src/Components';
-import php from '../../src/exercises/php';
+import { ChapterNavigator, Exercise, Link } from '../../../src/Components';
+import php from '../../../src/exercises/php';
 
 # Control Structures
 
@@ -68,7 +68,7 @@ The `if`, `elseif`, `else` will always be evaluated top to bottom, and as soon a
 ### Comparison Operators
 
 You can also use the Comparison Operators to create an expression that can be evaluated to a boolean. All Comparison Operators result in a boolean value.
-A list of available operators can be found [in the PHP manual](https://www.php.net/manual/en/language.operators.comparison.php).
+A list of available operators can be found <Link href="https://www.php.net/manual/en/language.operators.comparison.php">in the PHP manual</Link>.
 
 It is important to note the difference between two variables being **equal** and **identical**.
 Equality checks are also called "loose comparisons", since it does not take type into consideration.
@@ -95,7 +95,7 @@ if ((int)$myString === $myInteger) {
 
 ### Logical Operators
 
-Conditions can be strung together with Logical Operators. The list of available Logical Operators are also viewable [in the PHP manual](https://www.php.net/manual/en/language.operators.comparison.php).
+Conditions can be strung together with Logical Operators. The list of available Logical Operators are also viewable <Link href="https://www.php.net/manual/en/language.operators.comparison.php">in the PHP manual</Link>.
 
 Note here that `and`, `or` and `xor` operators, while still valid syntax, are not used anymore in modern PHP and most code style guides will advise against using them.
 
@@ -154,7 +154,7 @@ Objects:
 Null:
 * always false
 
-To get an extensive overview of all different data types and how they evaluate to booleans, you can reference the [PHP manual](https://www.php.net/manual/en/types.comparisons.php)
+To get an extensive overview of all different data types and how they evaluate to booleans, you can reference the <Link href="https://www.php.net/manual/en/types.comparisons.php">PHP manual</Link>.
 
 <Exercise title="Try to set $condition to different values to experiment with type evaluation to boolean." />
 
@@ -496,7 +496,7 @@ To decide which loop to use, you can ask yourself the following 4 questions in t
 ## Other control structures
 
 For the time being we're going to end here with control structures. PHP offers more control structures which we will discover throughout the course.
-If you want to get a head-start, you can read more about other control structures in [the PHP manual](https://www.php.net/manual/en/language.control-structures.php).
+If you want to get a head-start, you can read more about other control structures in <Link href="https://www.php.net/manual/en/language.control-structures.php">the PHP manual</Link>.
 
 ## Exercising
 
@@ -517,4 +517,4 @@ Here are some little challenges to exercise your knowledge so far. It is recomme
 
 TODO: more exercises.
 
-<ChapterNavigator prev="/php/02-first-php-script" next="/php/04-php-in-html" />
+<ChapterNavigator prev="/courses/php-beginners/02-first-php-script" next="/courses/php-beginners/04-php-in-html" />
