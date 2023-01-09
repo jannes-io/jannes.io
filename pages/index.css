@@ -1,0 +1,11 @@
+pre {
+    padding: 16px;
+    overflow: auto;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.17);
+}
+
+.token.important {
+    font-weight: bold;
+    color: #d14146;
+}

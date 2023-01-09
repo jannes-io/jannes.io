@@ -7,7 +7,8 @@ import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import { styled } from '@mui/material/styles';
 import { Link } from '../src/Components';
-import Image from 'next/image';
+import './prism.css';
+import './index.css';
 
 const Home = styled(Link)(() => ({
   textDecoration: 'none',

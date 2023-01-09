@@ -4,45 +4,48 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
-  AlertTitle, Typography,
+  AlertTitle,
+  Box,
+  Typography,
 } from '@mui/material';
+import Snippet from './Snippet';
 
 interface IExerciseProps {
   title: React.ReactNode;
   hints?: string[];
   language?: string;
-  codeSolution?: boolean
+  codeSolution?: string;
 }
 
 export const Exercise: React.FC<PropsWithChildren<IExerciseProps>> = ({
   title,
   hints,
+  children,
   language,
   codeSolution,
-  children,
-}) => <Alert
-  severity="info"
->
-  <AlertTitle>Exercise</AlertTitle>
-  <Typography mb={2}>
-    {title}
-  </Typography>
-  {hints && hints.map((hint, i) => <Accordion key={hint}>
-    <AccordionSummary>Hint #{i + 1}</AccordionSummary>
-    <AccordionDetails>{hint}</AccordionDetails>
-  </Accordion>)}
-  {children && <Accordion>
-    <AccordionSummary>Example solution</AccordionSummary>
-    <AccordionDetails>
-      {codeSolution
-        ? <pre>
-          <code className={language ? `language-${language}` : ''}>
-            {children}
-          </code>
-        </pre>
-        : children}
-    </AccordionDetails>
-  </Accordion>}
-</Alert>;
+}) => <Box mt={2}>
+  <Alert>
+    <AlertTitle>Exercise</AlertTitle>
+    <Typography mb={2}>
+      {title}
+    </Typography>
+    {hints && hints.map((hint, i) => <Accordion key={hint}>
+      <AccordionSummary>Hint #{i + 1}</AccordionSummary>
+      <AccordionDetails>{hint}</AccordionDetails>
+    </Accordion>)}
+    {children && <Accordion>
+      <AccordionSummary>Example solution</AccordionSummary>
+      <AccordionDetails>
+        {children}
+      </AccordionDetails>
+    </Accordion>}
+    {codeSolution && language && <Accordion>
+      <AccordionSummary>Example solution</AccordionSummary>
+      <AccordionDetails>
+        <Snippet language={language} code={codeSolution} />
+      </AccordionDetails>
+    </Accordion>}
+  </Alert>
+</Box>;
 
 export default Exercise;

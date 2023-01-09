@@ -1,5 +1,4 @@
-import { ChapterNavigator, Exercise, Link, SEO } from '../../../src/Components';
-import php from '../../../src/exercises/php';
+import { ChapterNavigator, Exercise, Link, SEO, Snippet } from '../../../src/Components';
 
 <SEO
   title="Control Structures in PHP"
@@ -19,7 +18,7 @@ Similarly, control structures in programming dictate the flow of our application
 If/Else, or going back to our train analogy, they are the junctions in our code. Let's look at a simple if statement.
 Go ahead and adapt your code in `src/index.php` to match the following code and refresh your page.
 
-```php
+<Snippet language="php" code={`
 <?php
 $condition = true;
 if ($condition) {
@@ -29,44 +28,44 @@ if ($condition) {
 } else {
     echo 'I am false';
 }
-```
+`} />
 
 Now let's dissect this further.
 
-```php
+<Snippet language="php" code={`
 if
-```
+`} />
 
 This starts off an if statement.
 
-```php
+<Snippet language="php" code={`
 $condition
-```
+`} />
 
 The expression that needs to be evaluated. Always surrounded in parentheses.
 
-```php
+<Snippet language="php" code={`
 {
     echo 'I am true';
 }
-```
+`} />
 
 The code block that is executed if `$condition` evaluates to `true`.
 
-```php
+<Snippet language="php" code={`
 } elseif ($condition === 0) {
     echo 'I am zero';
 }
-```
+`} />
 
 An optional additional if, in this case we check if `$condition` is identical to `0`. You can add as many `elseif` sections as you need.
 Try changing `$condition = true;` to `$condition = 0;` and you will see `'I am zero'` on your page.
 
-```php
+<Snippet language="php" code={`
 } else {
     echo 'I am false';
 }
-```
+`} />
 
 The else part is also optional and is only executed when no previous `if (...)` is executed.
 Go ahead and change the value in `$condition` to `false`, and you will see the result on your page.
@@ -87,7 +86,7 @@ If you know that you have to compare 2 variables of different types, say a strin
 
 Example of strict comparison between a string and an integer:
 
-```php
+<Snippet language="php" code={`
 <?php
 $myString = '10';
 $myInteger = 10;
@@ -99,7 +98,7 @@ if ($myString === $myInteger) {
 if ((int)$myString === $myInteger) {
     echo 'Correct.';
 }
-```
+`} />
 
 ### Logical Operators
 
@@ -107,24 +106,25 @@ Conditions can be strung together with Logical Operators. The list of available 
 
 Note here that `and`, `or` and `xor` operators, while still valid syntax, are not used anymore in modern PHP and most code style guides will advise against using them.
 
-<Exercise title="Create an expression with $a, $b and $c that evaluates to true if $a is greater or equals to $b, and $c is identical to 10.">
-  <pre>
-    <code className="language-php">
-      &#60;?php
-      $a = 1;
-      $b = 0;
-      $c = 10;
-      echo $a >= $b && $c === 10;
-    </code>
-  </pre>
-</Exercise>
+<Exercise
+  title="Create an expression with $a, $b and $c that evaluates to true if $a is greater or equals to $b, and $c is identical to 10."
+  language="php"
+  codeSolution={`
+<?php
+$a = 1;
+$b = 0;
+$c = 10;
+
+$result = $a >= $b && $c === 10;
+var_dump($result);
+`} />
 
 ### What is true?
 
 So far we've been talking about "evaluates to true/false", and we've been using a boolean value (`true` or `false`) in `$condition`.
 In reality, anything can be evaluated as a boolean value. For example, let's change `$condition` to hold an integer of value `0` and then see what happens.
 
-```php
+<Snippet language="php" code={`
 <?php
 $condition = 0;
 if ($condition) {
@@ -132,7 +132,7 @@ if ($condition) {
 } else {
     echo 'I am false';
 }
-```
+`} />
 
 It prints "I am false"? All data types that we've seen in the previous chapter can be used as an expression.
 The action of "evaluating as a boolean value" is also called "type casting to boolean", we already briefly talked about type casting in the previous chapter.
@@ -171,7 +171,7 @@ To get an extensive overview of all different data types and how they evaluate t
 You can imagine that in some cases you'd want to check a variable for many values and do something different depending on said value.
 Let's look at an example using `if` statements.
 
-```php
+<Snippet language="php" code={`
 <?php
 $state = 'pending_payment';
 if ($state == 'pending_payment') {
@@ -183,13 +183,13 @@ if ($state == 'pending_payment') {
 } elseif ($state == 'shipped') {
     echo 'Your order has been shipped.';
 } else {
-    echo 'Oops! Seems like we\'ve lost your order';
+    echo 'Oops! Seems like we have lost your order';
 }
-```
+`} />
 
 You can see how this can get very convoluted and hard to read. This is where a `switch` statement would come in handy. So let's rewrite this if statement using a `switch`.
 
-```php
+<Snippet language="php" code={`
 <?php
 $state = 'pending_payment';
 switch ($state) {
@@ -206,42 +206,42 @@ switch ($state) {
         echo 'Your order has been shipped.';
         break;
     default:
-        echo 'Oops! Seems like we\'ve lost your order';
+        echo 'Oops! Seems like we have lost your order';
 }
-```
+`} />
 
 This may be a lot to take in at once, so let's dive in piece by piece.
 
-```php
+<Snippet language="php" code={`
 switch ($state)
-```
+`} />
 
 This states that we want to have a `switch` statement with `$state` as the subject.
 
-```php
+<Snippet language="php" code={`
 case 'pending_payment':
-```
+`} />
 
 The `case` section defines what value the subject needs to be compared to.
 Note from our previous knowledge about values being equal(`==`) or identical(`===`), the `case` value is checked with loose comparison (`==`).
 So a value does not need to be identical, only equal. This means that for the switch, the string `'1'` is considered equal to the integer `1`.
 
-```php
+<Snippet language="php" code={`
 echo 'You still need to pay';
-```
+`} />
 
 Then we define the code that needs to be executed if the value is equal to the subject.
 
-```php
+<Snippet language="php" code={`
 break;
-```
+`} />
 
 The `break` statement indicates that we're finished with the `switch`. A little further down we'll set up an example without `break` to see what that would look like.
 
-```php
+<Snippet language="php" code={`
 default:
-    echo 'Oops! Seems like we\'ve lost your order';
-```
+    echo 'Oops! Seems like we have lost your order';
+`} />
 
 The `default` case is entered when no other values are found to match the subject. Comparable to `else` in the `if` statement.
 
@@ -249,7 +249,7 @@ The `default` case is entered when no other values are found to match the subjec
 
 Like mentioned before, a `break` statement is needed in each `case` section if we only want to execute 1 piece of code. Let's modify that same `switch` from before but only using `break` in some cases.
 
-```php
+<Snippet language="php" code={`
 <?php
 $state = 'pending_payment';
 switch ($state) {
@@ -262,16 +262,16 @@ switch ($state) {
         echo 'Your order is on its way!';
         break;
     default:
-        echo 'Oops! Seems like we\'ve lost your order';
+        echo 'Oops! Seems like we have lost your order';
 }
-```
+`} />
 
 Here we repeat multiple `case` statements without any code. This can be useful if we want multiple values to do the same code.
 So in this example, when `$state` is `'processing'`, `'pending_shipment'` or `'shipped'` it will all show the same message, namely `'Your order is on its way!'`.
 
 We can also add additional logic without a `break`. Let's modify our example again.
 
-```php
+<Snippet language="php" code={`
 <?php
 $state = 'pending_payment';
 switch ($state) {
@@ -285,9 +285,9 @@ switch ($state) {
         echo 'It may have arrived already. Check your mail!';
         break;
     default:
-        echo 'Oops! Seems like we\'ve lost your order';
+        echo 'Oops! Seems like we have lost your order';
 }
-```
+`} />
 
 In this instance, we dropped the `break`. Now for `'processing'` and `'pending_shipment'` it will say `'Your order is on its way! It may have arrived already. Check your mail!'`.
 But for `shipped` it will only say `'It may have arrived already. Check your mail!'`.
@@ -307,41 +307,41 @@ and in other programming languages often the only type of "for"-loop we will cov
 
 Let's modify our `index.php` file with the following content:
 
-```php
+<Snippet language="php" code={`
 <?php
 for ($i = 0; $i < 10; $i++) {
   echo $i;
 }
-```
+`} />
 
 Refreshing our page will show the result of the loop. Let's dissect the `for` loop further.
 
-```php
+<Snippet language="php" code={`
 for
-```
+`} />
 
 Same as with the if statement, this starts off our for loop.
 
-```php
+<Snippet language="php" code={`
 $i = 0;
-```
+`} />
 
 This part defines the start of the loop. In this case we create a variable `$i` and assign the value `0`.
 
-```php
+<Snippet language="php" code={`
 $i < 10;
-```
+`} />
 
 Then comes the loop condition. This essentially means "loop while `$i` is smaller than 10". The for loop will continue looping until this part evaluates to `false`.
 
-```php
+<Snippet language="php" code={`
 $i++
-```
+`} />
 
 And finally we have the step. The step part will run after each loop. In this case `$i++` is short for `$i += 1`, which in turn is short for `$i = $i + 1`.
 While technically speaking `$i++` and `$i = $i + 1` are not the same, for our purpose here it is. If you want to see the differences try running the following code:
 
-```php
+<Snippet language="php" code={`
 <?php
 $a = 0;
 echo $a = $a + 1;
@@ -351,7 +351,7 @@ echo $b++;
 
 $c = 0;
 echo ++$c;
-```
+`} />
 
 As you can see, PHP first evaluates `$a = $a + 1`, which is equal to `1` and then passes that result to `echo`.
 While with `$b++` it first passes the current value of `$b` to `echo`, and then increments the value.
@@ -359,16 +359,15 @@ The same can be done for decrementing using `-` instead of `+`.
 
 So going back to the result of our loop, if we start with `$i = 0`, and loop while `$i < 10`, and after each loop `$i` is incremented with 1, and each iteration we print the value of `$i`, we get the result `0123456789`.
 
-<Exercise title="Try getting the loop to print the numbers in reverse, starting at 9 and ending in 0 by modifying the start, loop condition and step portions.">
-  <pre>
-    <code className="language-php">
-      &#60;?php
-      for ($i = 9; $i >= 0; $i--) {`{
+<Exercise
+  title="Try getting the loop to print the numbers in reverse, starting at 9 and ending in 0 by modifying the start, loop condition and step portions."
+  language="php"
+  codeSolution={`
+<?php
+for ($i = 9; $i >= 0; $i--) {
     echo $i;
-}`}
-    </code>
-  </pre>
-</Exercise>
+}
+`} />
 
 ### foreach
 
@@ -377,37 +376,37 @@ This type of loop iterates over each element in an array (or anything that imple
 
 Let's modify our code again.
 
-```php
+<Snippet language="php" code={`
 <?php
 $array = [1, 2, 3];
 foreach ($array as $element) {
     echo $element;
 }
-```
+`} />
 
 Let's look at this a little more in-dept.
 
-```php
+<Snippet language="php" code={`
 $array = [1, 2, 3];
-```
+`} />
 
 This simply creates a variable that holds an array of values `1, 2, 3`. You've already seen the `array` type in the previous chapter so you can see it in action here.
 
-```php
+<Snippet language="php" code={`
 foreach
-```
+`} />
 
 Just as with the other control structures, we start our foreach loop.
 
-```php
+<Snippet language="php" code={`
 $array
-```
+`} />
 
 This is the array we want to loop over.
 
-```php
+<Snippet language="php" code={`
 as $element
-```
+`} />
 
 `$element` is a new variable that will be used temporarily to hold the value of the current iteration.
 
@@ -418,39 +417,39 @@ Looking at our result again, if we have an array that holds the values `1, 2, 3`
 While loops will continue looping until a condition is true. They can be used in identical fashion to our first loop type, `for` but are generally more flexible.
 Like our first loop, it's less common to see while...do and do...while loops out in the wild.
 
-```php
+<Snippet language="php" code={`
 <?php
 $i = 10;
 while ($i > 0) {
     echo $i;
     $i--;
 }
-```
+`} />
 
 Once again, let's dissect this loop.
 
-```
+<Snippet language="php" code={`
 $i = 10;
-```
+`} />
 
 We create a variable with value `10`.
 
-```
+<Snippet language="php" code={`
 while
-```
+`} />
 
 We start our while loop.
 
-```
+<Snippet language="php" code={`
 $i > 10
-```
+`} />
 
 This is the condition part of the while loop. It means "continue looping as long as $i is bigger than 10".
 
-```
+<Snippet language="php" code={`
 echo $i;
 $i--;
-```
+`} />
 
 We print the value of `$i` to the screen, and decrement `$i` with 1. Just as with `$i++`, `$i--` is short for `$i -= 1` which is short for `$i = $i - 1`.
 
@@ -463,31 +462,31 @@ This means that even if we start with a condition that is not true, the loop wil
 
 Let's try doing exactly that.
 
-```php
+<Snippet language="php" code={`
 <?php
 $i = 0;
 do {
     echo 'I am still executed!';
 } while ($i > 0);
-```
+`} />
 
 Let's do a quick dissection of the do...while loop.
 
-```php
+<Snippet language="php" code={`
 do
-```
+`} />
 
 We start our loop
 
-```php
+<Snippet language="php" code={`
 echo 'I am still executed!';
-```
+`} />
 
 Echo some text to the page.
 
-```php
+<Snippet language="php" code={`
 while ($i > 0);
-```
+`} />
 
 We check our condition to see if we need to repeat the loop.
 
@@ -512,17 +511,35 @@ Practice makes perfect. We've now covered a big part of the basic PHP building b
 Here are some little challenges to exercise your knowledge so far. It is recommended to try a few before continuing to the next chapter.
 
 <Exercise
-  codeSolution
-  language="php"
   title="Iterate over the array [1,2,3] and echo the value multiplied by 2. You should see '246' on your screen."
   hints={[
     'If you\'ve forgotten how to create an array variable, check out the Data Types section in the previous chapter',
     'Make sure you use the correct type of loop. Check the section "What loop do I use?" in this chapter. Remember that we have an array and we need to multiply each value.'
   ]}
->
-  {php.chapter3.MultipleArray}
-</Exercise>
+  language="php"
+  codeSolution={`
+<?php
+$array = [1, 2, 3];
+foreach ($array as $value) {
+    echo $value * 2;
+}
+`} />
 
-TODO: more exercises.
+<Exercise
+  title="Use the previous exercise in combination with what we've learnt about if-statements and only print the value if it is bigger than 3 after multiplying by 2."
+  hints={[
+    'You can check if a number is divisible by another number by using the modulo operator, "%". If the result is 0, then the number is divisible by the divisor.'
+  ]}
+  language="php"
+  codeSolution={`
+<?php
+$array = [1, 2, 3];
+foreach ($array as $value) {
+    $multiplied = $value * 2;
+    if ($multiplied > 3) {
+        echo $multiplied;
+    }
+}
+`} />
 
 <ChapterNavigator prev="/courses/php-beginners/02-first-php-script" next="/courses/php-beginners/04-php-in-html" />

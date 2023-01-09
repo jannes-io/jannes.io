@@ -1,4 +1,4 @@
-import { ChapterNavigator, Link, SEO } from '../../../src/Components';
+import { ChapterNavigator, Link, SEO, Snippet } from '../../../src/Components';
 
 <SEO
   title="What Is PHP?"
@@ -16,9 +16,9 @@ Websites are split up into 2 sections. Frontend and backend, or in other words, 
 HTML, CSS and JavaScript are all things that are evaluated and executed in the browser.
 
 Take for example this piece of HTML:
-```html
+<Snippet language="html" code={`
 <p>Hello world</p>
-```
+`} />
 
 This instructs the browser to render a paragraph with the text "Hello world". But what if we want to do more?
 Let's say we want to execute complex code and retrieve data from different sources to combine them into one page?

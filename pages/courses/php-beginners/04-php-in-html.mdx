@@ -1,4 +1,4 @@
-import { ChapterNavigator, SEO } from '../../../src/Components';
+import { ChapterNavigator, SEO, Snippet } from '../../../src/Components';
 
 <SEO
   title="PHP In HTML"
@@ -14,7 +14,7 @@ Now that we've got a basic understanding of PHP and before expanding your PHP kn
 we should take a look at how we can actually use PHP on a website. So far you haven't accomplished much in terms of creating an actual webpage.
 Let's give our `index.php` file a basic HTML structure. Replace everything (including any `<?php ?>` tags) with the following content:
 
-```html
+<Snippet language="html" code={`
 <html lang="en">
 <head>
 <title>My cool PHP website</title>
@@ -23,17 +23,17 @@ Let's give our `index.php` file a basic HTML structure. Replace everything (incl
 <h3>PHP in HTML or is it HTML in PHP?</h3>
 </body>
 </html>
-```
+`} />
 
 As you can see, it simply renders the HTML in the browser. Since we didn't define any PHP tags, PHP has nothing to do and simply prints the HTML to the browser.
 Now let's print our previous "Hello, World!" example in this file. For brevity only the contents of `<body>` are shown in the code sample.
 
-```php
+<Snippet language="php" code={`
 <body>
 <h3>PHP in HTML or is it HTML in PHP?</h1>
 <?php echo 'Hello, World!' ?>
 </body>
-```
+`} />
 
 And voila! You just executed a piece of PHP inside HTML.
 
@@ -44,14 +44,14 @@ Therefor if your string contains any HTML tags, they will be rendered accordingl
 
 Let's look at an example:
 
-```php
+<Snippet language="php" code={`
 <body>
 <?php
 $html = '<p>I am a <strong>PHP string</strong> containing <strong>HTML tags</strong></p>';
 echo $html;
 ?>
 </body>
-```
+`} />
 
 If you run this code, you can see that our `p` and `strong` tags are interpreted by the browser and the text is shown in bold.
 In general, this is considered bad practice, as this could be extremely dangerous and could introduce security issues.
@@ -68,7 +68,7 @@ When mixing PHP and HTML, our control structures take on a different look. They'
 This isn't a requirement, but it does make your code much easier to read.
 
 Consider the following snippet:
-```php
+<Snippet language="php" code={`
 <body>
 <?php
 $numbers = [];
@@ -99,13 +99,13 @@ for ($i = 0; $i <= 20; $i++) {
     <?php } ?>
 </ul>
 </body>
-```
+`} />
 
 It creates 2 lists, one containing all the even numbers from 0 to 20, and the other all the odd numbers.
 This is starting to get hard to read, especially the closing braces since they're hidden and surrounded by php tags.
 So let's rewrite this snippet to use the alternative control structure syntax.
 
-```php
+<Snippet language="php" code={`
 <body>
 <?php
 $numbers = [];
@@ -136,7 +136,7 @@ for ($i = 0; $i <= 20; $i++) {
     <?php endforeach; ?>
 </ul>
 </body>
-```
+`} />
 
 So in essence, in the opening statement we replace the opening brace (`{`) with a colon (`:`).
 And the closing brace (`}`) is replaced with `end` followed by the control structure. I.E. `endforeach;`.
@@ -153,22 +153,22 @@ Later on in this course we'll also touch on code-style, but for now we'll focus 
 The general rule is that if you need multiple lines of PHP code, except for control structures, you can use a single opening and closing tag surrounding it.
 
 **Bad**:
-```php
+<Snippet language="php" code={`
 <?php $numbers = []; ?>
 <?php for ($i = 0; $i <= 20; $i++): ?>
     <?php $numbers[] = $i; ?>
 <?php endfor; ?>
-```
+`} />
 
 **Good**:
-```php
+<Snippet language="php" code={`
 <?php
 $numbers = [];
 for ($i = 0; $i <= 20; $i++) {
     $numbers[] = $i;
 }
 ?>
-```
+`} />
 
 #### Echo'ing HTML
 
@@ -176,7 +176,7 @@ Another consideration is printing HTML from PHP. A lot of the time we see HTML c
 The recommendation here is to keep `echo` statements as localised as possible. Let's look at 2 examples:
 
 **Bad**:
-```php
+<Snippet language="php" code={`
 <body>
 <?php
 $link = 'https://example.com';
@@ -184,10 +184,10 @@ $someData = 'example-link';
 echo '<a href="' . $link . '" data-some="' . $someData .  '">My link</a>';
 ?>
 </body>
-```
+`} />
 
 **Good**:
-```php
+<Snippet language="php" code={`
 <body>
 <?php
 $link = 'https://example.com';
@@ -195,6 +195,6 @@ $someData = 'example-link';
 ?>
 <a href="<?php echo $link ?>" data-some="<?php echo $someData ?>">My link</a>
 </body>
-```
+`} />
 
 <ChapterNavigator prev="/courses/php-beginners/03-control-structures" />

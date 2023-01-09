@@ -1,5 +1,4 @@
-import { ChapterNavigator, Exercise, Link, SEO } from '../../../src/Components';
-import php from '../../../src/exercises/php';
+import { ChapterNavigator, Exercise, Link, SEO, Snippet } from '../../../src/Components';
 
 <SEO
   title="First PHP Script"
@@ -17,10 +16,10 @@ by opening `src/index.php`. As you can see it already starts us off with an open
 ## Echo (echo, echo, ...)
 
 Let's start with the classic task of printing "Hello, World!" to our screen. Inside our PHP file, go ahead and write the following:
-```php
+<Snippet language="php" code={`
 <?php
 echo 'Hello, World!';
-````
+`} />
 
 When you refresh your browser, you should see "Hello, World!" on the page. Note that every line in PHP must end with `;`.
 Don't worry, PHP will tell you if you're missing it. Try it out by removing the semicolon (`;`) at the end of the line and refreshing your browser.
@@ -43,11 +42,11 @@ unexpected end of file
 
 This part tells you that PHP has reached the end of the file without finding what it's looking for. There are other variants of this too. For example modify your code to have 2 lines without semicolons:
 
-```php
+<Snippet language="php" code={`
 <?php
 echo 'Hello, World!'
 echo 'Hello, World!'
-````
+`} />
 
 Now when you refresh the page, it will replace that part with something like this:
 
@@ -83,28 +82,30 @@ So the next time you see an error, really try to read it, dissect its parts, and
 The PHP tags lets PHP know that you want to execute a piece of PHP code.
 There are 2 different variants of the PHP tag, and just like with HTML it consists of an opening tag, and a closing tag.
 
-```php
+<Snippet language="php" code={`
 <?php ?>
 <?= ?>
-```
+`} />
 
 * `<?php ?>` will execute any PHP code between the tag,
 * `<?= ?>` is called the "Shorthand PHP open tag" and is an extension of the regular PHP tag, but also prints the result to the page.
 
 The following 2 lines of code are functionally identical:
-```php
+
+<Snippet language="php" code={`
 <?php echo 'Hello, World!' ?>
 <?= 'Hello, World!' ?>
-```
+`} />
 
 The shorthand open tag can be disabled on certain servers, that's why it's preferred to always use the regular tag in combination with `echo`.
 Just know it exists if you ever come across it.
 
 Your script should currently look like this:
-```php
+
+<Snippet language="php" code={`
 <?php
 echo 'Hello, World!';
-```
+`} />
 
 Now you may ask yourself, we just looked at the PHP tag and it always consists of an opening (`<?php`) and a closing tag (`?>`).
 But here we only have the opening tag and it still works?
@@ -123,13 +124,13 @@ So let's extend our code to print "Hello, World!" multiple times without having 
 
 To create a variable, start with the dollar sign (`$`), followed by the name of the variable (`hello`), then an equals sign (`=`), and finally the value (`'Hello, World!'`).
 
-```php
+<Snippet language="php" code={`
 <?php
 $hello = 'Hello, World!';
 echo $hello;
 echo $hello;
 echo $hello;
-```
+`} />
 
 Refresh the page, and you should now see "Hello, World!Hello, World!Hello, World!" in your browser.
 
@@ -139,7 +140,7 @@ PHP is a dynamically typed language. If you have any prior experience in other p
 In dynamically typed languages such as PHP a variable's type is assigned on runtime, in other words, when the code is executed. And it can even change on runtime! This is considered bad practice but that's for later.
 Let's look at the different data types we've got available to us.
 
-```php
+<Snippet language="php" code={`
 <?php
 $string = 'Hello';
 $bool = true;
@@ -148,7 +149,7 @@ $float = 0.5;
 $array = ['Hello', true, 1, 0.5];
 $object = new stdClass();
 $nothing = null;
-```
+`} />
 
 <dl>
   <dt>string</dt>
@@ -171,11 +172,11 @@ These data types form the core building blocks of all data you can store in the 
 Using `var_dump` will not only tell you the value of the variable, like `echo` did, but it will also give you information about its type.
 Let's modify our code to use `var_dump` instead.
 
-```php
+<Snippet language="php" code={`
 <?php
 $hello = 'Hello, World!';
 var_dump($hello);
-```
+`} />
 
 After a page refresh, you should see:
 
@@ -193,13 +194,13 @@ It is also possible to change a variable's type. This action is called Type Cast
 
 Change your code to match the following snippet.
 
-```php
+<Snippet language="php" code={`
 <?php
 $str = '123';
 var_dump($str);
 $int = (int)$str;
 var_dump($int);
-```
+`} />
 
 You can see that `$str` was first a `string` with value `'123'`. But during the assignment of `$int` we type cast to `int` using `(int)`. Now the value of `$int` is an integer instead of a string.
 
@@ -213,20 +214,29 @@ For an extensive list of all operators, visit the <Link href="https://www.php.ne
 Complete the following exercises to test your understanding of variables and operators.
 
 <Exercise
-  codeSolution
-  language="php"
   title="Create 2 variables $a, and $b, give them integer values of 5 and 10 respectively. Add them together and store the result in $c. Then var_dump the result of $c."
->
-  {php.chapter2.Addition}
-</Exercise>
+  language="php"
+  codeSolution={`
+<?php
+$a = 5;
+$b = 10;
+$c = $a + $b;
+
+var_dump($c);
+`} />
 
 <Exercise
-  codeSolution
-  language="php"
   title="Have 2 variables, $firstName and $lastName, and print the full name to the screen. For example if $firstName is 'John', $lastName is 'Doe', the result on-screen should be 'John Doe'"
   hints={['You can use the concatenation operator "." to glue 2 strings together']}
->
-  {php.chapter2.Concatenation}
-</Exercise>
+  language="php"
+  codeSolution={`
+<?php
+$firstName = 'John';
+$lastName = 'Doe';
+
+$fullName = $firstName . ' ' . $lastName;
+
+var_dump($fullName);
+`} />
 
 <ChapterNavigator prev="/courses/php-beginners/01-what-is-php" next="/courses/php-beginners/03-control-structures" />
