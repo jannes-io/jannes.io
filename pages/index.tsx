@@ -26,7 +26,12 @@ const Home: NextPage = () => <>
         <ul>
           <li>
             <Link href="/courses/php-beginners">
-              PHP for beginners
+              PHP For Beginners (🚧WIP🚧)
+            </Link>
+          </li>
+          <li>
+            <Link href="/courses/php-rest-api">
+              PHP REST API From Scratch (🚧WIP🚧)
             </Link>
           </li>
         </ul>

@@ -1,0 +1,55 @@
+import { ChapterNavigator, SEO, Link } from '../../../src/Components';
+
+<SEO
+  title="Build a PHP REST API from scratch"
+  meta={{
+    description: 'Build your own fully custom REST API using 0 dependencies.',
+    keywords: 'PHP, REST, API'
+  }}
+/>
+
+# REST API From Scratch
+
+In this course we will go on a journey through building your own REST API that can be interacted with using JavaScript or external parties.
+
+In this course we will cover the following topics:
+* HTTP requests and responses
+* RESTful API design
+* PHP application architecture
+* Interacting with relational databases
+* Building your own starter boilerplate REST framework to develop your API on
+
+We do want to mention that building a REST API from scratch is rarely done.
+Nowadays 3rd party packages and frameworks make it much easier and safer.
+Our personal recommendation for anything API related would be to use <Link href="https://api-platform.com/">API Platform</Link>,
+which is built on the widely popular <Link href="https://symfony.com/">Symfony</Link> framework.
+**Let it be clear** that the purpose of this course is purely educational to gain a deeper understanding
+of what goes into making an API from scratch when 3rd party packages are not involved.
+
+## Prerequisites
+
+This course assumes you have at least a decent understanding of PHP and its syntax.
+You should be able to read and write PHP quite comfortably as we will not be explaining PHP itself, but rather how it is used in an API context.
+If you need a refresher on PHP, or have never used it before, you can use our "PHP For Beginners" to get up to speed.
+
+* <Link href="/courses/php-beginners" target="_blank">PHP For Beginners (jannes.io)</Link>
+
+Optionally, we will be working with Docker to host our local development server.
+You are free to use your own LAMP stack, the minimal tested versions for this course are **PHP >=8.1** (with the pdo and pdo_mysql extensions), and **MySQL >=8.0**.
+
+* <Link href="https://www.docker.com/products/docker-desktop/">Download Docker Desktop</Link>
+* <Link href="https://github.com/jannes-io/php-course-docker">Download our basic LAMP stack</Link>
+
+We're also going to need a HTTP client that makes it easier to test and debug our application. We'll be using Postman for that.
+We recommend using the desktop version.
+
+* <Link href="https://www.postman.com/">Postman</Link>
+
+You should also check out our course philosophy page.
+It will explain how we're different from other courses and formal education as well as give you some insight in how to interpret our courses.
+
+* <Link href="/courses/philosophy" target="_blank">Course Philosophy</Link>
+
+Introductions out of the way, let's get right into it!
+
+<ChapterNavigator next="/courses/php-rest-api/01-what-is-rest" />

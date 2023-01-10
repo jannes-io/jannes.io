@@ -1,0 +1,55 @@
+import { ChapterNavigator, SEO, Link } from '../../../src/Components';
+
+<SEO
+  title="What is a REST API?"
+  meta={{
+    description: 'Brief description of REST APIs and what they are useful for.',
+    keywords: 'PHP, REST, API'
+  }}
+/>
+
+# What is a REST API?
+
+To understand what we're about to build, a bit of theory is mandatory
+We'll keep it brief and promise to dive into some actual code on the next chapter but this background information is **crucial** to our success.
+If you're already familiar with the terms REST and API, and know the HTTP standards, feel free to skip this chapter.
+
+REST and APIs are both topics that are very extensively documented. Our goal here is to look at them from a practical standpoint.
+If anything was left out, this was most likely intentional to stay on-track and not turn this course into a 500 chapter behemoth.
+We encourage you to look up the terms REST and API if you want to really take a deep-dive into the theory and history of
+web architecture.
+
+## What is an API?
+
+An Application Programming Interface, or API in short, can be thought of as the outwards facing interface that can be used by one or more other systems.
+If you've written any PHP classes so far, you've actually already written APIs. For example, the public methods on a class can be considered that class' API.
+Now when we talk about REST APIs, we're just taking it one step further.
+
+With the uprising of "dynamic" web applications, the need for backend APIs have risen immensely. Early websites typically had everything more embedded.
+Data was sent to the server in a web form, the server did some magic with it and computed some response HTML, and the browser rendered that HTML.
+Today, this is very different. And REST APIs have become something every web developer needs to be intimately comfortable with.
+
+In our practical use-case, our API will be used as a layer between our database,
+and a front-end client such as web applications (plain JavaScript, React, Vue, ...), mobile apps, desktop apps, other servers,... .
+
+## What is REST?
+
+REST stands for "**Re**presentational **S**tate **T**ransfer", in layman's terms, the transfer of state between applications using a generic format.
+State is simply the term used for data. An application's state is everything that can be retrieved and represented by the application.
+For example a row in a database, a file in storage, data from other APIs,... .
+
+Using REST forces an API to follow certain rules and conventions.
+This way it is easy for other applications to interact with your API, since the format and standards are already defined.
+
+HTTP REST APIs uses the HTTP format to communicate. We won't go into these standards for now as we'll cover them *extensively* during the implementation in PHP.
+
+## Tie the knot
+
+So with that understanding, we will be building an API that uses the REST principals to communicate data.
+Which in turn uses the HTTP standards to communicate data.
+Our goal will be to make a re-usable API that can easily be extended, independent of the domain.
+Some typical examples of a domain would be a blog, a book store, a todo list,... .
+
+Let's get our hands dirty with some code now.
+
+<ChapterNavigator prev="/courses/php-rest-api" next="/courses/php-rest-api/02-scaffolding" />

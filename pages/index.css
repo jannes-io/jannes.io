@@ -9,3 +9,7 @@ pre {
     font-weight: bold;
     color: #d14146;
 }
+
+img {
+    max-width: 100%;
+}

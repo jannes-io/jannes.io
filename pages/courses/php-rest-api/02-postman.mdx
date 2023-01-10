@@ -1,0 +1,66 @@
+import { ChapterNavigator, SEO, Link, Snippet } from '../../../src/Components';
+
+<SEO
+  title="Calling PHP From Postman"
+  meta={{
+    description: 'This chapter explains how to call a PHP web server from Postman.',
+    keywords: 'PHP, REST, API'
+  }}
+/>
+
+# Calling PHP From Postman
+
+Viewing the results of our PHP script can be done in multiple ways.
+So far you've probably only used your browser or JavaScript to interact with websites written in PHP.
+That's about to change. Postman is specialised in showing the results of HTTP requests in a more easily digestible way for what we'll be using it for.
+First let's briefly touch on running our PHP web server, although you should already be familiar with this.
+
+## HTTP Server
+
+Since we'll be starting from scratch, we've got some setup to do before we can get into actually building an API.
+First, let's familiar ourselves with our environment. In the first chapter, you should've installed Docker Desktop
+and grabbed our basic LAMP template. If you have chosen to go with your own LAMP stack, you can skip ahead to the next section.
+Below you can find the links to both Docker Desktop and our LAMP template again.
+
+* <Link href="https://www.docker.com/products/docker-desktop/">Download Docker Desktop</Link>
+* <Link href="https://github.com/jannes-io/php-course-docker">Download our basic LAMP stack</Link>
+
+If you need help installing the HTTP server you can find the instructions in <Link href="/courses/php-beginners/01-what-is-php">this chapter</Link> of our "PHP For Beginners" course.
+
+In your project root directory (the folder that contains the `docker-compose.yml` file), start the docker stack from a terminal:
+```
+docker-compose up -d
+```
+
+If you run into any Docker related issues, mainly name conflicts because of prior courses followed. You can always safely delete containers from Docker Desktop.
+This does not delete any files, it simply cleans up the Docker images and releases the images, containers, volumes,... .
+
+<img src="/img/php-rest-api/02-docker-remove.png" />
+
+In the future, you can also use Docker Desktop to launch your project instead of using the command line.
+
+We'll be writing all of our code in the `src` directory. You should find an empty `index.php` file already prepared.
+Let's move over to Postman to confirm that our server is running.
+
+## Postman
+
+To confirm our server is running, let's modify our `index.php` script to output something, so we're not staring at a blank screen.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+echo 'Hello from REST API';
+`} />
+
+Now, open Postman and press the '+' button to create a new request.
+
+<img src="/img/php-rest-api/02-postman.png" />
+
+In the request bar, fill in the URL of our webserver that's running PHP. (`http://localhost`).
+
+And press "Send". Now we should see the text "`Hello from REST API`" on our screen.
+
+<img src="/img/php-rest-api/02-postman-hello.png" />
+
+Voila! Our server is up and running, so we can move on to writing some actual PHP.
+
+<ChapterNavigator prev="/courses/php-rest-api/01-what-is-rest" next="/courses/php-rest-api/03-autoloading" />

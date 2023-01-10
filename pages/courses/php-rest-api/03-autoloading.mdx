@@ -1,0 +1,130 @@
+import { ChapterNavigator, SEO, Link, Snippet } from '../../../src/Components';
+
+<SEO
+  title="Autoloading PHP classes"
+  meta={{
+    description: 'Autoloading automatically loads PHP classes, so we don\'t need to manually include files.',
+    keywords: 'PHP, REST, API, autoloading'
+  }}
+/>
+
+# Autoloading
+
+Automatically loading files is the first step in any application. In most applications this is handled by `composer`, a PHP package manager.
+Comparable to `npm` or `yarn` in JavaScript. But since we're not allowed to use any 3rd party packages, we'll have to write our own autoloader.
+
+Luckily PHP makes this really easy for us and provides some out-of-the box functions for us. We only need to make this once and then never touch it again.
+This autoloader will replace the need to ever call `require` or `include` on a file again.
+Since we will have quite a few files by the end of this journey, it will save us a lot of time and headaches.
+
+## Professionals have standards
+
+For autoloading, we're going to follow the PSR-4 recommendations. A bit of background since this won't be the only PSR recommendation we'll be following:
+
+PSR stands for *"PHP Standards Recommendations"* and is an effort from the PHP community to standardize the way we do things.
+You can find all the PSR documents on the <Link href="https://www.php-fig.org/">PHP-FIG</Link> website.
+
+Looking at the list, we notice that there is a standard for autoloading, namely <Link href="https://www.php-fig.org/psr/psr-4/">PSR-4</Link>. So we'll try to implement it closely.
+
+To summarize and rephrase PSR-4 in less technical terms:
+- Each class, interface, trait, enum or other structures need to be declared in its own file,
+- The name of the file must match the classname,
+- The namespace of each structure must match the directory structure on the filesystem,
+- The namespace prefix must correspond with a base directory.
+
+The table at the bottom of the page gives some good examples. For our use-case, our base directory is the `src` directory.
+And as namespace prefix, we'll use `Api`.
+
+So a concrete example for us would be:
+
+The class: `Api\ExampleNamespace\MyClass` must be located in: `src/ExampleNamespace/MyClass.php`
+
+## Implementating PSR-4
+
+Let's start by creating a new file for this process named `autoload.php`. This `autoload.php` file and our `index.php` will be the only exceptions to the class/file conventions.
+
+<Snippet language="php" file="src/autoload.php" code={`
+class Psr4Autoloader
+{
+}
+`} />
+
+From the PSR-4 implementation, it sounds like we need to know 2 things. What is the base path, and what is our chosen namespace prefix.
+So let's gather those during the `__construct` method and store those things in some fields.
+
+Additionally, let's make a public method that can be used to start the autoloader called `register`.
+
+<Snippet language="php" file="src/autoload.php" code={`
+class Psr4Autoloader
+{
+    public function __construct(
+        private readonly string $namespacePrefix,
+        private readonly string $baseDirectory,
+    ) {
+    }
+
+    public function register(): void
+    {
+    }
+}
+`} />
+
+Previously we mentioned that PHP had some functions that could help us out here.
+Let's look at <Link href="https://www.php.net/manual/en/function.spl-autoload-register.php">`spl_autoload_register`</Link>.
+
+As we can read in the documentation, it registers a function (the `$callback`) as an autoloader to try to load the file if a class can't be found.
+
+So let's implement just that. And using the new PHP 8.1 function syntax, we can make it look quite nice.
+
+<Snippet language="php" file="src/autoload.php" code={`
+class Psr4Autoloader
+{
+    //..
+
+    public function register(): void
+    {
+        spl_autoload_register($this->registerClass(...));
+    }
+
+    private function registerClass(string $className): void
+    {
+        $realClass = str_replace($this->namespacePrefix, $this->baseDirectory, $className);
+        $file = DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $realClass) . '.php';
+
+        require $file;
+    }
+}
+`} />
+
+To recap, we made a private `registerClass` function which takes a `$className`, like `\Api\CoolNamespace\MyClass`.
+And turns it into a filename, replacing the namespace prefix with our base director, so it becomes `$baseDirectory/CoolNamespace/MyClass.php`.
+Namespaces always use backslashes `\`, and some file systems can't handle those,
+so we use a special constant `DIRECTORY_SEPARATOR` to let PHP decide what slashes to use.
+
+Then we give this function to the `spl_autoload_register` function as the `$callback` argument.
+
+Finally, below the class we need to create an instance of this class and call the `register` function.
+
+<Snippet language="php" file="src/autoload.php" code={`
+(new Psr4Autoloader('Api', __DIR__))->register();
+`} />
+
+We pass in our chosen namespace prefix, `Api`, and our base directory. For the base directory we use another special PHP constant named `__DIR__`.
+It simply prints the current script directory. And as it happens, our `autoload.php` file is in our base directory `src`. So this is an exact match.
+
+It's okay if this part isn't entirely clear. Like we already stated before, autoloading is not something that you usually do yourself.
+It uses some rather less-common functions, like `spl_autoload_register`. Luckily we only need to do this once and we're finished.
+
+## Using our autoloader
+
+The last thing that's left to do is write our first and last `require_once` statement ever. In `index.php` require the autoloader file.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'autoload.php';
+`} />
+
+Voila, we've implemented PSR-4 to take care of loading all of our future classes.
+Next up is looking at how we're going to structure our code, and getting started on our database connection.
+
+<ChapterNavigator prev="/courses/php-rest-api/02-postman.mdx" next="/courses/php-rest-api/04-database" />
