@@ -83,7 +83,7 @@ class Psr4Autoloader
     {
         spl_autoload_register(function (string $className) {
             $realClass = str_replace($this->namespacePrefix, $this->baseDirectory, $className);
-            $file = DIRECTORY_SEPARATOR . str_replace('\\\\', DIRECTORY_SEPARATOR, $realClass) . '.php';
+            $file = str_replace('\\\\', DIRECTORY_SEPARATOR, $realClass) . '.php';
 
             require $file;
         });
