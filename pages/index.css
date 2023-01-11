@@ -5,6 +5,12 @@ pre {
     background-color: rgba(0, 0, 0, 0.17);
 }
 
+:not(pre) > code {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
 .token.important {
     font-weight: bold;
     color: #d14146;

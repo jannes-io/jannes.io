@@ -1,0 +1,222 @@
+import { ChapterNavigator, SEO, Link, Snippet } from '../../../src/Components';
+
+<SEO
+  title="PDO Database Connection"
+  meta={{
+    description: 'Connecting a PHP application with a MySQL database.',
+    keywords: 'PHP, REST, API, MySQL'
+  }}
+/>
+
+# 4. PDO Database Connection
+
+Naturally, we're going to want to store and retrieve data from a database. MySQL is one of the most common
+database engines around and even more so for the PHP language.
+
+## Creating a Database
+
+Our Docker setup already contains a MySQL server and a handy tool called PHPMyAdmin that allows us to browse
+and modify databases from within our browser. This tool is exposed on port `8080`. If you are not using
+our Docker preset. You'll probably have a MySQL client already, you can perfectly use that as well.
+
+So open up a browser of your choosing, and navigate to `localhost:8080`. You should be presented by
+a log in screen. The default username is `root`, and for testing purposes, the password is also `root`.
+Obviously when you want to build a production PHP application, you'll have to configure your own password.
+If you're planning to use our Docker LAMP stack for production,
+you can change the root password in the `docker-compose.yml` file.
+
+Once logged in, press the "New" button on the top left.
+
+<img src="/img/php-rest-api/04-new-database.png" />
+
+Fill in the name of the database, in our case we'll be using `my_api`, pick `utf8mb4_unicode_ci` from the dropdown menu and press "create".
+Nowadays, unicode is the most common database format for new databases. It essentially sets the character set of your database.
+We'll not go into any more information about the charset since it's not very common to use others.
+Just know that on MySQL 8+, `utf8mb4` and specifically the `unicode_ci` set is the most universal,
+and you should pick that one unless you know what you're doing.
+
+<img src="/img/php-rest-api/04-database-create.png" />
+
+## Defining the Domain
+
+As seen in the <Link href="/courses/php-rest-api/01-what-is-rest">first chapter</Link> of this course, our domain is a Blog. Our main entities will be:
+- Post: a blog article with a title, some content and an author,
+- Author: the poster of the post,
+- User: linked to the author, will be used for checking security.
+
+Creating and updating the MySQL schema automatically based on PHP code is the job of an
+<Link href="https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping">ORM</Link> (Object Relational Mapper) or
+<Link href="https://en.wikipedia.org/wiki/Database_abstraction_layer">DBAL</Link> (Database Abstraction Layer) like
+<Link href="https://www.doctrine-project.org/">Doctrine</Link> or <Link href="https://laravel.com/docs/9.x/eloquent">Eloquent</Link>.
+Since these are fairly complex topics in and of themselves, we will not be making any automatic PHP object to MySQL schema mapping.
+Instead, we will manually create our schema.
+
+## MySQL Schema
+
+Let's go ahead and prepare some tables in PHPMyAdmin. First we'll create our `user` table.
+
+The user object will be used to log in and authenticate someone or something. The user table will have the following columns:
+- id
+- username
+- password
+- email
+- roles
+
+On our hypothetical blog, regular users are not allowed to post, but `authors` are. Granted they give a bit more information about themselves:
+- id
+- first_name
+- last_name
+- user
+
+Finally, the `posts` themselves, consisting of the fields:
+- id
+- title
+- content
+- author
+
+Since it's easier to share the schema using SQL code, you can execute SQL code when going to the "SQL" tab after selecting your database on the left.
+
+<img src="/img/php-rest-api/04-execute-sql.png" />
+
+Copy/paste the code below in the big textarea and press the "Go" button.
+
+<Snippet language="sql" code={`
+CREATE TABLE \`users\` (
+    \`id\` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    \`username\` VARCHAR(64) NOT NULL,
+    \`password\` VARCHAR(256) NOT NULL,
+    \`email\` VARCHAR(128) NOT NULL,
+    \`roles\` TEXT NOT NULL,
+    PRIMARY KEY (\`id\`),
+    UNIQUE \`unique_username\` (\`username\`),
+    UNIQUE \`unique_email\` (\`email\`)
+) ENGINE = InnoDB;
+
+CREATE TABLE \`authors\` (
+    \`id\` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    \`first_name\` VARCHAR(64) NOT NULL,
+    \`last_name\` VARCHAR(64) NOT NULL,
+    \`user\` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (\`id\`)
+) ENGINE = InnoDB;
+ALTER TABLE \`authors\` ADD CONSTRAINT \`authors_user_fk\` FOREIGN KEY (user) REFERENCES \`users\`(\`id\`);
+
+CREATE TABLE \`posts\` (
+    \`id\` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    \`title\` VARCHAR(128) NOT NULL,
+    \`content\` TEXT NOT NULL,
+    \`author\` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (\`id\`)
+) ENGINE = InnoDB;
+ALTER TABLE \`posts\` ADD CONSTRAINT \`posts_author_fk\` FOREIGN KEY (author) REFERENCES \`authors\`(\`id\`);
+`} />
+
+If all went well, you should now have 3 tables, `authors`, `posts` and `users`. Since MySQL isn't the topic of this course
+we won't be diving any deeper into this schema. From now on, we will only be using PHPMyAdmin to check on our data, all other interactions
+will be done using PHP.
+
+<img src="/img/php-rest-api/04-schema.png" />
+
+## PHP Entities
+
+We already hinted at the term "Entity" in the previous section. An entity is an object that contains some data.
+Like the user entity, contains all the columns of the user table.
+
+Since this will be the first time writing classes in this project. We'll also briefly discuss the directory structure we'll be using.
+Inside of `src` we'll have 2 directories.
+- Framework: Anything generic that has nothing to do with the business logic of your application will go in here.
+- Domain: Business logic and <Link href="https://en.wikipedia.org/wiki/Domain_(software_engineering)">domain</Link> logic goes here.
+This will contain all the entities, repositories, controllers, services,... that have to do with the domain.
+
+If we look at our entities so far, we have 1 that would fall under `Framework`, and 2 that would be specific to the blogging `Domain`.
+Since `users` will be used for authenticating and security, we'll be placing that one in the `Framework` folder. This is a generic entity that you'll need
+in almost every API. Security is a complex topic with many different implementations. For our use-case, we'll be going with a simple OAuth2 server implementation.
+For now, you don't need to worry about any of that. As long as it makes some sense that `users` are generic to most APIs, while `authors` and `posts` are
+very clearly specific to the blogging domain.
+
+So let's create some directories and files:
+<Snippet language="text" code={`
+src/
+  Domain/
+    Entity/
+      Author.php
+      Post.php
+  Framework/
+    Entity/
+      User.php
+  autoload.php
+  index.php
+`} />
+
+As you can see, directories are always `PascalCase` and singular. This is just a code style standard. You can find these "rules" in
+<Link href="https://www.php-fig.org/psr/psr-12/">PSR-12</Link>. There are external tools that allow you to automatically format
+your code according to these rules, however, since we're limited to no 3rd party plugins or tools, we'll have to manage our own code.
+All code provided in this course will follow PSR-12. If you use PHPStorm, you're in luck,
+<Link href="https://www.jetbrains.com/help/phpstorm/configuring-code-style.html#configure-code-style-schemes">PHPStorm has PSR-12</Link> built-in.
+
+## Connecting to the Database using PHP
+
+We will need some place to store our connection information for our database. Ideally, in a real world API,
+these would be stored in the environment variables of the server. Or `.env` files. But to keep things simple,
+we'll be using a simple PHP file containing constants.
+
+So go ahead and create a PHP file called `config.php` in the root directory with 3 constants.
+The DSN of our database (formatted connection string of our MySQL host and the database name we just created), and the username and password of our user.
+We will also give our constants a prefix, so they're separated from any PHP constants that already exist and easily identifiable.
+
+<Snippet language="php" file="src/config.php" code={`
+<?php
+
+const API_CONFIG_DB_DSN = 'mysql:host=mysql;dbname=my_api';
+const API_CONFIG_DB_USER = 'root';
+const API_CONFIG_DB_PASSWORD = 'root';
+`} />
+
+We will need to load this config file manually, since it's not a class. So let's go ahead and `require` it in our `index.php`.
+This will be the final file we `require` ourselves. Everything else will be taken care of by our autoloader.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+`} />
+
+## Repository Pattern
+
+All of our interactions with the database will follow the Repository Pattern. In short, a repository
+represents a collection of objects. The same way a table contains rows. We'll call these objects "Entities".
+Some examples of entities would be a post on a blog, or an author, an address, a product on a webshop,... .
+An entity is represented by PHP class, and a repository is responsible for getting all the data required
+for that class from the database.
+
+Each entity will have its own repository, but all these repositories will share some common functionality.
+So let's start by creating an abstract repository. Since this is some generic class that isn't related to our
+blog domain, we place it in the `Framework` folder, and we'll even give it its own subdirectory, `Repository`.
+
+<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
+<?php
+
+namespace Api\\Framework\\Repository;
+
+abstract class AbstractRepository
+{
+    protected \\PDO $db;
+
+    public function __construct()
+    {
+        $this->db = new \\PDO(API_CONFIG_DB_DSN, API_CONFIG_DB_USER, API_CONFIG_DB_PASSWORD);
+    }
+}
+`} />
+
+As discussed in the previous chapter with autoloading, our namespace has to match our directory structure and start with `Api`.
+So the namespace `Api\Framework\Repository` matches the directory `src/Framework/Repository`. And the classname must match the file name.
+This makes the full file name: `src/Framework/Repository/AbstractRepository.php`. And the full classname is `Api\Framework\Repository\AbstractRepository`.
+
+As you can see, in the constructor of our repository we initialize a `PDO` instance, and set it to a protected variable named `$db`.
+Because it's protected, all of our child repositories will be able to access the database directly in case they need to perform any complex queries.
+
+
+
+<ChapterNavigator prev="/courses/php-rest-api/03-autoloading" next="/courses/php-rest-api/05-controllers" />

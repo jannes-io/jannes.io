@@ -8,7 +8,7 @@ import { ChapterNavigator, SEO, Link, Snippet } from '../../../src/Components';
   }}
 />
 
-# Autoloading
+# 3. Autoloading
 
 Automatically loading files is the first step in any application. In most applications this is handled by `composer`, a PHP package manager.
 Comparable to `npm` or `yarn` in JavaScript. But since we're not allowed to use any 3rd party packages, we'll have to write our own autoloader.
@@ -74,8 +74,6 @@ Let's look at <Link href="https://www.php.net/manual/en/function.spl-autoload-re
 
 As we can read in the documentation, it registers a function (the `$callback`) as an autoloader to try to load the file if a class can't be found.
 
-So let's implement just that. And using the new PHP 8.1 function syntax, we can make it look quite nice.
-
 <Snippet language="php" file="src/autoload.php" code={`
 class Psr4Autoloader
 {
@@ -83,25 +81,20 @@ class Psr4Autoloader
 
     public function register(): void
     {
-        spl_autoload_register($this->registerClass(...));
-    }
+        spl_autoload_register(function (string $className) {
+            $realClass = str_replace($this->namespacePrefix, $this->baseDirectory, $className);
+            $file = DIRECTORY_SEPARATOR . str_replace('\\\\', DIRECTORY_SEPARATOR, $realClass) . '.php';
 
-    private function registerClass(string $className): void
-    {
-        $realClass = str_replace($this->namespacePrefix, $this->baseDirectory, $className);
-        $file = DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $realClass) . '.php';
-
-        require $file;
+            require $file;
+        });
     }
 }
 `} />
 
-To recap, we made a private `registerClass` function which takes a `$className`, like `\Api\CoolNamespace\MyClass`.
+To recap, we call the `spl_autoload_register` function with a function that takes a `$className`, like `\Api\CoolNamespace\MyClass`.
 And turns it into a filename, replacing the namespace prefix with our base director, so it becomes `$baseDirectory/CoolNamespace/MyClass.php`.
 Namespaces always use backslashes `\`, and some file systems can't handle those,
-so we use a special constant `DIRECTORY_SEPARATOR` to let PHP decide what slashes to use.
-
-Then we give this function to the `spl_autoload_register` function as the `$callback` argument.
+so we replace all backslashes with a special constant, `DIRECTORY_SEPARATOR`, to let PHP decide what slashes to use depending on the operating system.
 
 Finally, below the class we need to create an instance of this class and call the `register` function.
 
@@ -117,7 +110,7 @@ It uses some rather less-common functions, like `spl_autoload_register`. Luckily
 
 ## Using our autoloader
 
-The last thing that's left to do is write our first and last `require_once` statement ever. In `index.php` require the autoloader file.
+The last thing that's left to do is to include the autoloader in our application.
 
 <Snippet language="php" file="src/index.php" code={`
 <?php
