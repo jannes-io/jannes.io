@@ -49,7 +49,7 @@ Creating and updating the MySQL schema automatically based on PHP code is the jo
 <Link href="https://en.wikipedia.org/wiki/Database_abstraction_layer">DBAL</Link> (Database Abstraction Layer) like
 <Link href="https://www.doctrine-project.org/">Doctrine</Link> or <Link href="https://laravel.com/docs/9.x/eloquent">Eloquent</Link>.
 Since these are fairly complex topics in and of themselves, we will not be making any automatic PHP object to MySQL schema mapping.
-Instead, we will manually create our schema.
+However, we will take some inspiration from these packages for parts of our API as they are battle hardened and easy to understand.
 
 ## MySQL Schema
 
@@ -112,7 +112,7 @@ ALTER TABLE \`posts\` ADD CONSTRAINT \`posts_author_fk\` FOREIGN KEY (author) RE
 `} />
 
 If all went well, you should now have 3 tables, `authors`, `posts` and `users`. Since MySQL isn't the topic of this course
-we won't be diving any deeper into this schema. From now on, we will only be using PHPMyAdmin to check on our data, all other interactions
+we won't be diving any deeper into this schema. From now on, we will only be using PHPMyAdmin to check or create test data, all other interactions
 will be done using PHP.
 
 <img src="/img/php-rest-api/04-schema.png" />
@@ -154,6 +154,61 @@ your code according to these rules, however, since we're limited to no 3rd party
 All code provided in this course will follow PSR-12. If you use PHPStorm, you're in luck,
 <Link href="https://www.jetbrains.com/help/phpstorm/configuring-code-style.html#configure-code-style-schemes">PHPStorm has PSR-12</Link> built-in.
 
+For our entities, we're going to mirror our database 1:1, where each field in the database has a corresponding public field in the entity.
+
+Starting with `authors`:
+
+<Snippet language="php" file="src/Domain/Entity/Author.php" code={`
+<?php
+
+namespace Api\\Domain\\Entity;
+
+class Author
+{
+    public int $id;
+    public string $firstName;
+    public string $lastName;
+    public int $user;
+}
+`} />
+
+Next up, `posts`:
+
+<Snippet language="php" file="src/Domain/Entity/Post.php" code={`
+<?php
+
+namespace Api\\Domain\\Entity;
+
+class Post
+{
+    public int $id;
+    public string $title;
+    public string $content;
+    public int $author;
+}
+`} />
+
+And finally, `users`:
+
+<Snippet language="php" file="src/Domain/Entity/Post.php" code={`
+<?php
+
+namespace Api\\Framework\\Entity;
+
+class User
+{
+    public int $id;
+    public string $username;
+    public string $password;
+    public string $email;
+    public array $roles;
+}
+`} />
+
+As discussed in the previous chapter with autoloading, our namespace has to match our directory structure and start with `Api`.
+So the namespace `Api\Framework\Entity` matches the directory `src/Framework/Entity`. And the classname must match the file name.
+This makes the full file name: `src/Framework/Entity/User.php`. And the full classname is `Api\Framework\Entity\User`.
+
 ## Connecting to the Database using PHP
 
 We will need some place to store our connection information for our database. Ideally, in a real world API,
@@ -182,41 +237,7 @@ require_once 'autoload.php';
 
 `} />
 
-## Repository Pattern
+We now have everything required to start interacting with our database. In the next chapter, we'll put everything we've made
+so far to the test and actually fetch and store some data from/to our database.
 
-All of our interactions with the database will follow the Repository Pattern. In short, a repository
-represents a collection of objects. The same way a table contains rows. We'll call these objects "Entities".
-Some examples of entities would be a post on a blog, or an author, an address, a product on a webshop,... .
-An entity is represented by PHP class, and a repository is responsible for getting all the data required
-for that class from the database.
-
-Each entity will have its own repository, but all these repositories will share some common functionality.
-So let's start by creating an abstract repository. Since this is some generic class that isn't related to our
-blog domain, we place it in the `Framework` folder, and we'll even give it its own subdirectory, `Repository`.
-
-<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
-<?php
-
-namespace Api\\Framework\\Repository;
-
-abstract class AbstractRepository
-{
-    protected \\PDO $db;
-
-    public function __construct()
-    {
-        $this->db = new \\PDO(API_CONFIG_DB_DSN, API_CONFIG_DB_USER, API_CONFIG_DB_PASSWORD);
-    }
-}
-`} />
-
-As discussed in the previous chapter with autoloading, our namespace has to match our directory structure and start with `Api`.
-So the namespace `Api\Framework\Repository` matches the directory `src/Framework/Repository`. And the classname must match the file name.
-This makes the full file name: `src/Framework/Repository/AbstractRepository.php`. And the full classname is `Api\Framework\Repository\AbstractRepository`.
-
-As you can see, in the constructor of our repository we initialize a `PDO` instance, and set it to a protected variable named `$db`.
-Because it's protected, all of our child repositories will be able to access the database directly in case they need to perform any complex queries.
-
-
-
-<ChapterNavigator prev="/courses/php-rest-api/03-autoloading" next="/courses/php-rest-api/05-controllers" />
+<ChapterNavigator prev="/courses/php-rest-api/03-autoloading" next="/courses/php-rest-api/05-repositories" />
