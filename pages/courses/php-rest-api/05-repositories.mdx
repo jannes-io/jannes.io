@@ -70,17 +70,13 @@ abstract class AbstractRepository
     public function findAll(): array
     {
     }
-
-    public function findBy(array $criteria): array
-    {
-    }
 }
 `} />
 
 - `find`: This function attempts to retrieve 1 item from the database by id. If found, it returns an instance of the entity. If not, it returns null.
 - `findAll`: Speaks for itself, results all items from the database and returns them as an array of entity instances.
-- `findBy`: Given some criteria, like `['email' => 'user@example.com']`, will fetch all items matching the criteria (`WHERE email = user@example.com`)
-and return them as an array of entity instances.
+
+Later we'll also add mutative functions to our repositories, such as `create`, `update` and `delete`.
 
 ## Testing Abstract Repository
 
@@ -116,7 +112,7 @@ into your query, it's totally safe. It's only dangerous if this string comes fro
 
 Anyway, next up we execute the statement using the `id` parameter.
 And finally, we <Link href="https://www.php.net/manual/en/pdostatement.fetch"> fetch the record in `PDO::FETC_ASSOC` mode</Link>.
-The `PDO::FETCH_ASSOC` mode returns the record as an associative `array` (`[key => value]`).
+The `PDO::FETCH_ASSOC` mode returns the record as an associative array (`[key => value]`).
 
 Now let's implement one of our entity repositories so we can test our code. Let's start with the user repository.
 
@@ -238,7 +234,7 @@ object(stdClass)#6 (5) {
 Hmm. Not really what we are looking for. As you can see from the `var_dump`, our object is an instance of `stdClass`.
 We don't want that, we want an instance of `User`. So we'll have to write our own deserialize function.
 
-We'll make this function `protected. Since this will allow child repositories to overwrite it in case they need some special steps
+We'll make this function `protected`. Since this will allow child repositories to overwrite it in case they need some special steps
 depending on the entity they're deserializing to.
 
 <Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
@@ -350,7 +346,7 @@ in our `UserRepository` and turn this `string` into an `array`.
 Now, the exact details of what these `$roles` will be explained later, when we get to security. For now it's
 just important to know that we'll store the roles in the database as a comma(`,`)-separated list.
 
-Let's modify our user repository to `explode` the roles field before passing it to the `deserialize` function.
+Let's modify our user repository to <PHPNet fn="explode" /> the roles field before passing it to the `deserialize` function.
 
 <Snippet language="php" file="src/Framework/Repository/UserRepository.php" code={`
 class UserRepository extends AbstractRepository
@@ -652,117 +648,7 @@ array(1) {
 Awesome! We get an array of `User` objects. Try adding some more test users in your database using PHPMyAdmin,
 and they will be added to the output of `findAll`.
 
-## FindBy
-
-Finally, the last `find` function, `findBy`. This function is the most difficult one because we'll have to dynamically create the query.
-Our goal is to call `findBy` with an associative array with column/value pairs to filter out our results.
-For example, `$repository->findBy(['firstName' => 'john', 'lastName' => 'doe'])` should only return records that match
-those criteria.
-
-Starting out simple, if no criteria is given, we'll return all records. Criteria can be seen as filters, so if the data isn't filtered,
-all records are returned.
-
-<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
-abstract class AbstractRepository
-{
-    // ...
-
-    public function findBy(array $criteria): array
-    {
-        if (empty($criteria)) {
-            return $this->findAll();
-        }
-    }
-
-    // ...
-}
-`} />
-
-Next up, we'll need to construct our SQL query with a `WHERE`-clause. Looping over all the `$criteria` and adding
-them to the query.
-
-<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
-abstract class AbstractRepository
-{
-    // ...
-
-    public function findBy(array $criteria): array
-    {
-        // ...
-        $nameConverter = new NameConverter();
-
-        $parameters = [];
-        $sql = "SELECT * FROM {$this->table} WHERE";
-        foreach ($criteria as $column => $value) {
-            $key = $nameConverter->convertCamelCaseToSnakeCase($column);
-            $parameters[$key] = $value;
-
-            $sql .= " $key = :$key";
-        }
-    }
-
-    // ...
-}
-`} />
-
-Remember from before, our database is using `snake_case` for its columns, while our entities are using `camelCase`.
-So this is where our `NameConverter` comes in handy again to convert between the two.
-
-Now all that's left to do is execute the query and deserialize the result similarly to `findAll`.
-
-<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
-abstract class AbstractRepository
-{
-    // ...
-
-    public function findBy(array $criteria): array
-    {
-        // ...
-        $statement = $this->db->prepare($sql);
-        $statement->execute($parameters);
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map($this->deserialize(...), $result);
-    }
-
-    // ...
-}
-`} />
-
-The complete `findBy` function should look like this:
-
-<Snippet language="php" file="src/Framework/Repository/AbstractRepository.php" code={`
-abstract class AbstractRepository
-{
-    // ...
-
-    public function findBy(array $criteria): array
-    {
-        if (empty($criteria)) {
-            return $this->findAll();
-        }
-
-        $nameConverter = new NameConverter();
-
-        $parameters = [];
-        $sql = "SELECT * FROM {$this->table} WHERE";
-        foreach ($criteria as $column => $value) {
-            $key = $nameConverter->convertCamelCaseToSnakeCase($column);
-            $parameters[$key] = $value;
-
-            $sql .= " $key = :$key";
-        }
-        $statement = $this->db->prepare($sql);
-        $statement->execute($parameters);
-
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return array_map($this->deserialize(...), $result);
-    }
-
-    // ...
-}
-`} />
+## Conclusion
 
 To finalize this chapter, let's test out our work so far in `index.php`.
 
@@ -780,9 +666,6 @@ var_dump($authorRepository->find(1));
 
 echo '### findAll ###' . PHP_EOL;
 var_dump($authorRepository->findAll());
-
-echo '### findBy ###' . PHP_EOL;
-var_dump($authorRepository->findBy(['firstName' => 'tester']));
 `} />
 
 The output of `localhost` should now look similar to this:
@@ -813,24 +696,10 @@ array(1) {
     int(1)
   }
 }
-### findBy ###
-array(1) {
-  [0]=>
-  object(Api\\Domain\\Entity\\Author)#9 (4) {
-    ["id"]=>
-    int(1)
-    ["firstName"]=>
-    string(6) "tester"
-    ["lastName"]=>
-    string(6) "author"
-    ["user"]=>
-    int(1)
-  }
-}
 `} />
 
 And finished! That's our repositories done for now.
 Later we're also going to add functions to create, update and delete items. But let's take a break
 from repositories for now and move on to something else.
 
-<ChapterNavigator prev="/courses/php-rest-api/04-database" />
+<ChapterNavigator prev="/courses/php-rest-api/04-database" next="/courses/php-rest-api/06-http" />

@@ -1,0 +1,362 @@
+import { ChapterNavigator, SEO, Link, Snippet, PHPNet } from '../../../src/Components';
+
+<SEO
+  title="HTTP in PHP"
+  meta={{
+    description: 'Modeling a subsection of the HTTP protocol in PHP.',
+    keywords: 'PHP, REST, API, MySQL'
+  }}
+/>
+
+## The HTTP Protocol
+
+Understanding the HTTP protocol is essential in web development, particularly in building APIs.
+In this section, we will explore HTTP requests and responses from the perspective of an API.
+
+A request is a standardized piece of information that an API receives. It can be a request for data or an action to be performed.
+Conversely, a response is the API's answer to the request.
+
+HTTP requests contain specific components, including the URL of the requested resource,
+a method (e.g., GET, POST, PUT), headers that provide additional information about the request,
+and an optional body that contains data.
+
+On the other hand, HTTP responses are formulated by the server and include a status code (e.g., OK, Not Found, Internal Server Error),
+headers that provide additional information about the response,
+and an optional body that contains requested data, the result of an action, or an error message.
+
+## Modeling HTTP in PHP
+
+Before we can make any controllers that handle the HTTP protocol, we need to model the protocol in our code.
+There is a standard for request and response modeling in PSR, namely PSR-7. PSR-7 is a little bit too extensive for what we need here so we're going to
+skip on this standard for now and create a simplified version ourselves.
+We'll be making a couple of classes in `Framework` to translate HTTP gibberish into understandable bits of data that can be passed around efficiently.
+
+### Request
+
+As we discussed before, the request contains the following 4 components:
+- Method
+- URL
+- Headers
+- Body
+
+In our case, for our API, we're going to take some shortcuts and only model what we need for now, which is the method, a path (a subsection of the URL), and the body.
+
+Starting with the method, the HTTP method can only be 1 of a handful of <Link href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">different options</Link>.
+In our API, we will only be accepting 4 different methods for now. `GET`, `POST`, `PUT` and `DELETE`. These methods roughly translate to:
+
+- GET: Client wants to retrieve an entity,
+- POST: Client wants to create an entity or send data for processing,
+- PUT: Client wants to update an existing entity,
+- DELETE: Client wants to delete an entity,
+
+So the best way to model this in code, would be to use an `Enum`, which we'll call `RequestMethod`.
+
+<Snippet language="php" file="src/Framework/Model/RequestMethod.php" code={`
+<?php
+
+namespace Api\\Framework\\Model;
+
+enum RequestMethod: string
+{
+    case Get = 'GET';
+    case Post = 'POST';
+    case Put = 'PUT';
+    case Delete = 'DELETE';
+    case Options = 'OPTIONS';
+}
+`} />
+
+The other components of our request will be simple `string` types. So let's make our `Request` class.
+
+<Snippet language="php" file="src/Framework/Model/Request.php" code={`
+<?php
+
+namespace Api\\Framework\\Model;
+
+class Request
+{
+    public function __construct(
+        string $method,
+        string $path,
+        string $body,
+    ) {
+    }
+}
+`} />
+
+For our `$method`, let's transform it to our `RequestMethod` enum using the static `::from` function that is available on all Enums,
+and create a `private` field for it. The other fields can be stored directly as `private` fields.
+Also, if you remember from the HTTP protocol, the `body` of a request is optional. So we'll default this value to a blank string.
+
+<Snippet language="php" file="src/Framework/Model/Request.php" code={`
+<?php
+
+namespace Api\\Framework\\Model;
+
+class Request
+{
+    private RequestMethod $method;
+
+    public function __construct(
+        string $method,
+        private string $path,
+        private array $parameters = [],
+        private string $body = '',
+    ) {
+        $this->method = RequestMethod::from($method);
+    }
+}
+`} />
+
+Now let's also add some `getters` to retrieve the values.
+
+<Snippet language="php" file="src/Framework/Model/Request.php" code={`
+class Request
+{
+    // ...
+
+    public function getMethod(): RequestMethod
+    {
+        return $this->method;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getBody(): string
+    {
+        return $this->body;
+    }
+}
+`} />
+
+To complete our `Request` object, we're going to add a static function that'll allow us to easily create the request.
+Since PHP stores request info in a multitude of different <Link href="https://www.php.net/manual/en/language.variables.superglobals.php">superglobals</Link>
+and files, we'll use this function to combine everything in one place.
+
+<Snippet language="php" file="src/Framework/Model/Request.php" code={`
+class Request
+{
+    // ...
+
+    public static function createFromGlobals(): self
+    {
+        return new self(
+            $_SERVER['REQUEST_METHOD'],
+            $_SERVER['REQUEST_URI'],
+            file_get_contents('php://input') ?: ''
+        );
+    }
+}
+`} />
+
+The `$_SERVER` superglobal can provide us with the method, through `['REQUEST_METHOD]`, the path is also found in `$_SERVER`, under `['REQUEST_URI']`.
+And finally, the body of a request is stored in a special temporary file at the location of `php://input`. So we grab that and default to an empty string
+if no body is supplied by the request.
+
+Let's test this out in our `index.php`:
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+use Api\\Framework\\Model\\Request;
+
+$request = Request::createFromGlobals();
+var_dump($request);
+`} />
+
+Now send a `GET` request to `localhost/hello-from-request` using Postman, and you should see a result similar to this:
+<Snippet language="txt" code={`
+object(Api\\Framework\\Model\\Request)#3 (4) {
+  ["method":"Api\\Framework\\Model\\Request":private] => enum(Api\\Framework\\Model\\RequestMethod::Get)
+  ["path":"Api\\Framework\\Model\\Request":private] => string(19) "/hello-from-request"
+  ["body":"Api\\Framework\\Model\\Request":private] => string(0) ""
+}
+`} />
+
+Looking at this, we now know a request was made to `/hello-from-request`, with the method `GET`, and an empty body.
+How we are going to handle this request will be for the next chapter, for now we're not yet done with the HTTP protocol, we still need to formulate a response.
+
+### Response
+
+Similarly to the `Request` object, we're also going to be making a `Response` object. If we look back at the HTTP protocol, a response consists of the following components:
+
+- Status code
+- Headers
+- Content
+
+In this case, we will need all 3 to formulate a proper response.
+
+Let's start with the status codes.
+It's detrimental that the correct status code is provided to the client. Especially if we're talking about a REST API.
+
+Before we can start modeling these we're going to take a closer look at a couple of the status codes. We don't need to model
+every single status code, only the ones that are going to be relevant to us.
+
+Status codes are grouped per hundred:
+- 100-199: informational codes that aren't relevant to us at all, so we're going to skip these,
+- 200-299: success codes. We'll be using a couple of these, mainly 200, 201 and 204.
+- *200* - Ok: Everything went as expected and there might be data in the response body for the client to process,
+- *201* - Created: A new resource was created,
+- *204* - No Content: The request was accepted, and processing was successful, but the server has nothing to send back.
+- 300-399: redirection codes. Same as the 1xx codes, we'll be skipping these.
+- 400-499: client error codes. These will be relevant, we'll be using 400, 401, 403 and 404.
+- *400* - Bad Request: The client sent a malformed or invalid request that cannot be processed,
+- *401* - Unauthorized: The client is not logged in and the resource is protected,
+- *403* - Forbidden: The client is logged in, but does not have access to the resource,
+- *404* - Not Found: The requested resource can not by found by the server.
+- 500-599: server error codes. Here we'll only use 500.
+- *500* - Internal Server Error: Something went wrong on the server's side.
+
+For a good resource containing the full list of response status codes and their meaning, head over to the <Link href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN HTTP status</Link> reference.
+
+These look fairly similar to the request methods in terms of modeling them in PHP. So for the HTTP status code, we'll also use an `Enum`.
+
+<Snippet language="php" file="src/Framework/Model/HttpStatusCode.php" code={`
+<?php
+
+namespace Api\\Framework\\Model;
+
+enum HttpStatusCode: int
+{
+    // 2xx
+    case Ok = 200;
+    case Created = 201;
+    case NoContent = 204;
+
+    // 4xx
+    case BadRequest = 400;
+    case Unauthorized = 401;
+    case Forbidden = 403;
+    case NotFound = 404;
+
+    // 5xx
+    case InternalServerError = 500;
+}
+`} />
+
+For readability, we've separated them by hundreds. If we need to add any in the future, it'll be easy to find where to insert them.
+
+Looking at the other fields of the response, we've got headers and the body. Headers are always in the form of a `key => value` format, so we can store those
+in an `array`. And the content field is identical to the request body, we can just store that in a `string`.
+
+That gives us the following `Response` class:
+
+<Snippet language="php" file="src/Framework/Model/Response.php" code={`
+<?php
+
+namespace Api\\Framework\\Model;
+
+class Response
+{
+    public function __construct(
+        private string $content,
+        private HttpStatusCode $statusCode,
+        private array $headers = [],
+    ) {
+    }
+}
+`} />
+
+Let's also add some `getters` to retrieve the values again.
+<Snippet language="php" file="src/Framework/Model/Response.php" code={`
+class Response
+{
+    // ...
+
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function getStatusCode(): HttpStatusCode
+    {
+        return $this->statusCode;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+}
+`} />
+
+To test our response, we need to call the correct PHP functions. Let's create a `Response` object in our `index.php`.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+use Api\\Framework\\Model\\HttpStatusCode;
+use Api\\Framework\\Model\\Response;
+
+$response = new Response(
+    'Hello from my PHP response object',
+    HttpStatusCode::Ok
+);
+`} />
+
+To actually send this response to the client, we need 3 php functions.
+- <PHPNet fn="http_response_code" />: to set the status code
+- <PHPNet fn="header" />: to set a singular header, formatted as "$key: $value",
+- <PHPNet fn="echo" />: to send content
+
+So let's call these functions with the data from our response:
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+use Api\\Framework\\Model\\HttpStatusCode;
+use Api\\Framework\\Model\\Response;
+
+$response = new Response(
+    'Hello from my PHP response object',
+    HttpStatusCode::Ok
+);
+
+http_response_code($response->getStatusCode()->value);
+foreach ($response->getHeaders() as $key => $value) {
+    header("$key: $value");
+}
+echo $response->getContent();
+`} />
+
+It's important to always `echo` the content as last operation. It's not possible for PHP to send headers after anything is sent using `echo` or other functions
+that output data. For example, the following snippet of code will result in a warning regarding headers being sent after any output has been sent:
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+// ...
+
+$response = new Response(
+    'Hello from my PHP response object',
+    HttpStatusCode::Ok,
+    ['Content-Type' => 'application/json']
+);
+
+echo $response->getContent();
+http_response_code($response->getStatusCode()->value);
+foreach ($response->getHeaders() as $key => $value) {
+    header("$key: $value");
+}
+`} />
+
+Reverting back to our working `index.php`, if we now perform a request using Postman, you should simply see the following output:
+
+<Snippet language="txt" code={`
+Hello from my PHP response object
+`} />
+
+And in Postman you should also be able to see "Status: 200 OK".
+
+Try modifying `$response` with some different values and different status codes to familiarize yourself
+with what it looks like in Postman before heading over to the next chapter.
+
+<ChapterNavigator prev="/courses/php-rest-api/05-repositories" next="/courses/php-rest-api/07-controllers" />

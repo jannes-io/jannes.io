@@ -58,8 +58,8 @@ Additionally, let's make a public method that can be used to start the autoloade
 class Psr4Autoloader
 {
     public function __construct(
-        private readonly string $namespacePrefix,
-        private readonly string $baseDirectory,
+        private string $namespacePrefix,
+        private string $baseDirectory,
     ) {
     }
 
