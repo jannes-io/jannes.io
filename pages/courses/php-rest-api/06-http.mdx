@@ -100,7 +100,6 @@ class Request
     public function __construct(
         string $method,
         private string $path,
-        private array $parameters = [],
         private string $body = '',
     ) {
         $this->method = RequestMethod::from($method);
@@ -355,6 +354,44 @@ Hello from my PHP response object
 `} />
 
 And in Postman you should also be able to see "Status: 200 OK".
+
+To finish off this chapter, let's abstract away the sending of the response and delegate that functionality
+to the `Response` object itself.
+
+<Snippet language="php" file="src/Framework/Model/Response.php" code={`
+class Response
+{
+    // ...
+
+    public function send(): never
+    {
+        http_response_code($this->getStatusCode()->value);
+        foreach ($this->getHeaders() as $key => $value) {
+            header("$key: $value");
+        }
+        echo $this->getContent();
+        exit(0);
+    }
+}
+`} />
+
+We've added an extra <PHPNet fn="exit" /> at the end, and set the return type of the function to `never`.
+This will ensure that sending the response is the last thing our program will ever do to prevent
+the previously mentioned issues with sending content and headers in mixed orders.
+
+Now we can use this function in `index.php`.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+// ...
+
+$response = new Response(
+    'Hello from my PHP response object',
+    HttpStatusCode::Ok,
+    ['Content-Type' => 'application/json']
+);
+$response->send();
+`} />
 
 Try modifying `$response` with some different values and different status codes to familiarize yourself
 with what it looks like in Postman before heading over to the next chapter.

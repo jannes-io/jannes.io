@@ -1,0 +1,327 @@
+import { ChapterNavigator, SEO, Link, Snippet, PHPNet } from '../../../src/Components';
+
+<SEO
+  title="Controllers in REST API"
+  meta={{
+    description: 'Using controllers to receive requests and send responses in PHP.',
+    keywords: 'PHP, REST, API, controller'
+  }}
+/>
+
+## Controllers
+
+In the previous chapter we've modelled part of the HTTP protocol. Now we need something that
+can process the request, and form an appropriate response. This something is what we call a controller.
+Controllers are split up into different actions. And each action is responsible for taking a request, and producing a response.
+
+Let's look at a concrete example.
+
+The Author controller is going to be responsible for anything that has to do with Authors, and will listen to everything on `/authors`.
+Then each action corresponds to a different HTTP method and parameters.
+
+For REST, using the `Author` entity as an example, we'll need to implement the following 5 methods:
+- `GET /authors`: retrieves a list of authors
+- `GET /authors/:id`: retrieves a single author
+- `POST /authors`: create a new author
+- `PUT /author/:id`: update an existing author
+- `DELETE /author/:id`: delete an author
+
+REST specifies this very exact structure. Although each API has its own twists, for example, often PUT is replaced by POST.
+Some use the singular version of the entity name, some multiple, and many more nuances...
+What's most important is that your API is consistent.
+
+### Controller abstraction
+
+One thing that most REST APIs do share however, is using the `json` output format.
+So, we're going to make an `AbstractController` which will provide some boilerplate code that can be used by all of our future controllers.
+
+<Snippet language="php" file="src/Framework/Controller/AbstractController.php" code={`
+<?php
+
+namespace Api\\Framework\\Controller;
+
+use Api\\Framework\\Model\\HttpStatusCode;
+use Api\\Framework\\Model\\Response;
+
+abstract class AbstractController
+{
+    protected function json(mixed $data, HttpStatusCode $statusCode = HttpStatusCode::Ok): Response
+    {
+    }
+
+    protected function error(string $error, HttpStatusCode $statusCode = HttpStatusCode::BadRequest): Response
+    {
+    }
+}
+`} />
+
+This abstraction will receive some more love later, but for now we'll be providing 2 helper methods.
+The first will take any type of `$data`, and return a `Response` instance from our last chapter.
+
+The second function will take an error message, and also return a `Response`.
+
+We also take a `HttpStatusCode`, which we default to `200 OK` for the `json` method. And `400 Bad Request` for the `error` response.
+
+Now let's implement the methods using <PHPNet fn="json_encode" /> and setting the correct headers in our `Response`s.
+
+<Snippet language="php" file="src/Framework/Controller/AbstractController.php" code={`
+<?php
+abstract class AbstractController
+{
+    protected function json(mixed $data, HttpStatusCode $statusCode = HttpStatusCode::Ok): Response
+    {
+        try {
+            $content = json_encode($data, JSON_THROW_ON_ERROR);
+            return new Response($content, $statusCode, ['Content-Type' => 'application/json']);
+        } catch (\\JsonException $ex) {
+            return new Response($ex->getMessage(), HttpStatusCode::InternalServerError);
+        }
+    }
+
+    protected function error(string $error, HttpStatusCode $statusCode = HttpStatusCode::BadRequest): Response
+    {
+        return $this->json(['error' => $error], $statusCode);
+    }
+}
+`} />
+
+And there we go. We attempt to transform `$data` into a `json` string.
+If it's successful, create a `Response` object with the content, the given status code, and the `Content-Type` header.
+In case the `json_encode` method fails, we catch the exception and return the message with status code 500 instead.
+
+Later on, you most likely do not want to expose raw exception messages like that through your API, and it's advisable to
+replace it with a generic message while logging the actual error. But for now, we're just developing so we'd like to
+see the raw error messages in our output.
+
+For the `error` method. We simply call the `json` method, but we pass the error message in a neat array, and use a different status code.
+
+### Implementing a controller
+
+Let's implement this controller so we can take it for a spin. Since we've already used the `Author` entity as an example during this
+chapter, we'll continue down this path and create the `AuthorController`.
+
+<Snippet language="php" file="src/Domain/Controller/AuthorController.php" code={`
+<?php
+
+namespace Api\\Domain\\Controller;
+
+use Api\\Framework\\Controller\\AbstractController;
+use Api\\Framework\\Model\\Request;
+use Api\\Framework\\Model\\Response;
+
+class AuthorController extends AbstractController
+{
+    public function list(): Response
+    {
+    }
+
+    public function get(Request $request): Response
+    {
+    }
+
+    public function create(Request $request): Response
+    {
+    }
+
+    public function update(Request $request): Response
+    {
+    }
+
+    public function delete(Request $request): Response
+    {
+    }
+}
+`} />
+
+As you can see, we've also already provided the 5 methods or "actions" we discussed previously.
+
+Each action, except for `list`, takes a `Request` and returns a `Response`. This is the code equivalent of everything we've
+discussed so far in this chapter.
+
+### List action
+
+Let's continue implementing the `list` method. As you may be able to recall, in the Repositories chapter
+we implemented a `findAll` method. Let's inject the `AuthorRepository` through the constructor of this controller and
+use the `findAll` method to return all authors.
+
+<Snippet language="php" file="src/Domain/Controller/AuthorController.php" code={`
+<?php
+// ...
+use Api\\Domain\\Repository\\AuthorRepository;
+
+class AuthorController extends AbstractController
+{
+    private AuthorRepository $authorRepository;
+
+    public function __construct()
+    {
+        $this->authorRepository = new AuthorRepository();
+    }
+
+    public function list(Request $request): Response
+    {
+        $authors = $this->authorRepository->findAll();
+        return $this->json($authors);
+    }
+
+    // ...
+}
+`} />
+
+Fairly easy implementation. In most REST APIs, the list action also gives to ability for a client to use
+pagination. In very large domains this is even necessary. Imagine if your Twitter feed was completely fetched
+in only 1 request. It'd both crash the Twitter server and your browser.
+
+We won't be doing that now, but it's something to consider for later.
+
+What we will be doing now, is testing our controller. Let's hop back over to our `index.php` and use our controller
+to get all of our authors.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+use Api\\Domain\\Controller\\AuthorController;
+use Api\\Framework\\Model\\Request;
+
+$request = Request::createFromGlobals();
+
+$authorController = new AuthorController();
+$response = $authorController->list($request);
+$response->send();
+`} />
+
+If we send a request to `localhost` using Postman and everything went well, you should see a formatted
+`json` document containing all of our authors.
+
+### Get action
+
+To finish off this chapter, we're going to implement the `get` action.
+
+Our get action will need something from the Request, namely, which author to grab. Looking back at our structure, we're going to need
+parameters in our `Request` object. A parameter is a section of the url. In case of `GET /authors/:id`, `id` would be a parameter.
+
+Let's start off by modifying our `Request` object to store these parameters.
+
+<Snippet language="php" file="src/Framework/Request.php" code={`
+class Request
+{
+    public function __construct(
+        string $method,
+        private string $path,
+        private string $body = '',
+        private array $parameters = [],
+    ) {
+        $this->method = RequestMethod::from($method);
+    }
+
+    // ...
+
+    public function setParameter(string $key, string $value): void
+    {
+        $this->parameters[$key] = $value;
+    }
+
+    public function getParameter(string $key): ?string
+    {
+        return $this->parameters[$key] ?? null;
+    }
+}
+`} />
+
+We add an `array` named `$parameters` to our class. And we also provide an api to set and retrieve a parameter.
+
+Returning back to our `get` method, we can now implement it with our extended `Request` object.
+
+<Snippet language="php" file="src/Domain/Controller/AuthorController.php" code={`
+<?php
+// ...
+use Api\\Domain\\Repository\\AuthorRepository;
+
+class AuthorController extends AbstractController
+{
+    // ...
+
+    public function get(Request $request): Response
+    {
+        $id = (int)$request->getParameter('id');
+        $author = $this->authorRepository->find($id);
+
+        return $this->json($author);
+    }
+
+    // ...
+}
+`} />
+
+We get the `id` from the request, and use it in our repository's `find` function to fetch the author.
+Then we return the author entity in `json` format. Quite simple right?
+
+Let's modify our `index.php` again to test it out!
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+require_once 'config.php';
+require_once 'autoload.php';
+
+use Api\\Domain\\Controller\\AuthorController;
+use Api\\Framework\\Model\\Request;
+
+$request = Request::createFromGlobals();
+$request->setParameter('id', 1); // for testing purposes we manually set the id parameter
+
+$authorController = new AuthorController();
+$response = $authorController->get($request);
+$response->send();
+`} />
+
+If all went well, and an author with id 1 exists, we should see a `json` representation of our author with id 1.
+Let's also test what happens with an non-existing author id. Say id `12345`.
+
+<Snippet language="php" file="src/index.php" code={`
+<?php
+// ...
+$request->setParameter('id', 12345); // for testing purposes we manually set the id parameter
+// ...
+`} />
+
+It just returns `null`. Hmm. Not really what we'd like to see. Despite `null` being valid json, we'd like to give
+some more information to our client.
+
+This is why we made that `error` function in our `AbstractController`. So let's modify our `get` function to return
+a nice looking error response to the client.
+
+<Snippet language="php" file="src/Domain/Controller/AuthorController.php" code={`
+<?php
+// ...
+use Api\\Domain\\Repository\\AuthorRepository;
+
+class AuthorController extends AbstractController
+{
+    // ...
+
+    public function get(Request $request): Response
+    {
+        $id = (int)$request->getParameter('id');
+        $author = $this->authorRepository->find($id);
+
+        if ($author === null) {
+            return $this->error("Author with id '$id' does not exist.", HttpStatusCode::NotFound);
+        }
+
+        return $this->json($author);
+    }
+
+    // ...
+}
+`} />
+
+Now if we send another request, you can see we've got a nice error message, and the HTTP status code
+reflects what went wrong. So the client now has the ability to deduct from the status code and the error
+that they did something they weren't supposed to do.
+
+So far we've constantly been updating our `index.php` to call the right controller action with the correct request parameters.
+In the next chapter, we're going to dive into routing which will be the glue between an URL and a controller action.
+
+<ChapterNavigator prev="/courses/php-rest-api/06-http" next="/courses/php-rest-api/08-routes" />
