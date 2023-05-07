@@ -1,0 +1,36 @@
+@media print {
+    body {
+        background-color: white;
+    }
+
+    * {
+        color: black;
+    }
+
+    .show-print {
+        display: block;
+    }
+
+    .hide-print {
+        display: none;
+    }
+
+    .font-marker {
+        text-align: center;
+    }
+
+    .taglist {
+        margin-bottom: 0;
+    }
+
+    /* MUI overwrites */
+    .MuiChip-label {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .MuiContainer-root {
+        width: 100%;
+        max-width: 100%;
+    }
+}

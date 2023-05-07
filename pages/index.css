@@ -24,3 +24,11 @@ img {
     font-family: 'Permanent Marker', cursive;
     font-size: 2.5rem;
 }
+
+.show-print {
+    display: none;
+}
+
+.hide-print {
+    display: block;
+}

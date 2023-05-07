@@ -5,8 +5,11 @@ import { HideWrapper, DenseListItem, SpacedChip } from '../../src/Components';
 const Resume = () => <>
   <HideWrapper />
   <Grid container spacing={4} direction="row-reverse" py={8}>
+    <Grid item xs={12} className="show-print">
+      <Typography variant="h1" className="font-marker">Jannes Drijkoningen</Typography>
+    </Grid>
     <Grid item xs={12} lg={4}>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
+      <Box width="100%" display="flex" justifyContent="center" mb={1.2}>
         <img
           alt=""
           width={100}
@@ -14,7 +17,7 @@ const Resume = () => <>
           style={{ borderRadius: 100 }}
           src="https://placehold.co/400"
         />
-      </div>
+      </Box>
       <List dense>
         <DenseListItem icon={<Email />} label="jannesdrijkoningen@gmail.com" />
         <DenseListItem icon={<LocationOn />} label="Hasselt, Belgium" />
@@ -22,7 +25,7 @@ const Resume = () => <>
         <DenseListItem icon={<GitHub />} label="jannes-io" />
         <DenseListItem icon={<LinkedIn />} label="jannes-drijkoningen" />
       </List>
-      <Box mb={2}>
+      <Box mb={2} className="taglist">
         <SpacedChip label="PHP" />
         <SpacedChip label="Symfony" />
         <SpacedChip label="React" />
@@ -34,8 +37,8 @@ const Resume = () => <>
       </Box>
     </Grid>
     <Grid item xs={12} lg={8}>
-      <Typography variant="h1" className="font-marker">Jannes Drijkoningen</Typography>
-      <Typography pt={8} fontStyle="italic">
+      <Typography variant="h1" pt={7} className="font-marker hide-print">Jannes Drijkoningen</Typography>
+      <Typography pt={2} fontStyle="italic">
         Experienced full stack developer with a passion for elegant, no-compromise solutions.
         With nearly a decade of experience, I seek a senior fullstack or lead developer position
         to drive innovation and create value for your organization.

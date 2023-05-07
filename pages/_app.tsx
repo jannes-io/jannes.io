@@ -9,6 +9,7 @@ import createEmotionCache from '../src/createEmotionCache';
 import { Link, WrapperContext } from '../src/Components';
 import './prism.css';
 import './index.css';
+import './print.css';
 
 const Home = styled(Link)(() => ({
   textDecoration: 'none',
