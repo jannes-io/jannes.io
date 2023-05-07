@@ -1,12 +1,12 @@
 import * as React from 'react';
+import { useCallback, useState } from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
-import { Container, CssBaseline, ThemeProvider, Typography } from '@mui/material';
+import { Container, CssBaseline, ThemeProvider, Typography, styled } from '@mui/material';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
-import { styled } from '@mui/material/styles';
-import { Link } from '../src/Components';
+import { Link, WrapperContext } from '../src/Components';
 import './prism.css';
 import './index.css';
 
@@ -55,10 +55,18 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-export default function MyApp(props: MyAppProps) {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  return (
-    <CacheProvider value={emotionCache}>
+const App: React.FC<MyAppProps> = ({
+  Component,
+  emotionCache = clientSideEmotionCache,
+  pageProps,
+}) => {
+  const [showWrapper, setShowWrapper] = useState(true);
+  const hideWrapper = useCallback(() => {
+    setShowWrapper(false);
+  }, [setShowWrapper]);
+
+  return <CacheProvider value={emotionCache}>
+    <WrapperContext.Provider value={{ hideWrapper }}>
       <Head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
@@ -66,32 +74,37 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Main>
-          <Typography variant="h1" color="primary" fontWeight={700} pt={2}>
-            <Home href="/">
-              jannes.io
-            </Home>
-          </Typography>
-          <nav>
-            <Nav variant="caption">
-              <Link color="inherit" href="https://github.com/jannes-io">GitHub</Link>
-              |
-              <Link color="inherit" href="https://twitter.com/jannesio">Twitter</Link>
-              |
-              <Link color="inherit" href="https://www.linkedin.com/in/jannes-drijkoningen/">LinkedIn</Link>
-              |
-              <img src="/img/discord.svg" alt="" width={16} height={16} />
-              pvtHenk#8008
-            </Nav>
-          </nav>
+          {showWrapper && <>
+            <Typography variant="h1" color="primary" fontWeight={700} pt={2}>
+              <Home href="/">
+                jannes.io
+              </Home>
+            </Typography>
+            <nav>
+              <Nav variant="caption">
+                <Link color="inherit" href="https://github.com/jannes-io">GitHub</Link>
+                |
+                <Link color="inherit" href="https://twitter.com/jannesio">Twitter</Link>
+                |
+                <Link color="inherit"
+                  href="https://www.linkedin.com/in/jannes-drijkoningen/">LinkedIn</Link>
+                |
+                <img src="/img/discord.svg" alt="" width={16} height={16} />
+                pvtHenk#8008
+              </Nav>
+            </nav>
+          </>}
           <Component {...pageProps} />
         </Main>
-        <Footer>
+        {showWrapper && <Footer>
           <Typography variant="caption">
             <Link href="https://jannes.io/">jannes.io</Link> © 2023 by Jannes.IO is licensed under
             CC BY 4.0
           </Typography>
-        </Footer>
+        </Footer>}
       </ThemeProvider>
-    </CacheProvider>
-  );
+    </WrapperContext.Provider>
+  </CacheProvider>;
 }
+
+export default App;

@@ -11,6 +11,9 @@ const theme = createTheme({
     fontWeightBold: 700,
     h1: {
       fontSize: '2rem',
+    },
+    h6: {
+      marginTop: 20
     }
   },
   palette: {
@@ -22,12 +25,21 @@ const theme = createTheme({
       main: '#d14146',
     },
     secondary: {
-      main: '#19857b',
+      main: '#ffffff',
     },
     error: {
       main: red.A400,
     },
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        }
+      }
+    }
+  }
 });
 
 export default theme;
