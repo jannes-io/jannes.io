@@ -8,6 +8,7 @@ const Resume = () => <>
     <Grid item xs={12} lg={4}>
       <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
         <img
+          alt=""
           width={100}
           height={100}
           style={{ borderRadius: 100 }}
@@ -41,10 +42,10 @@ const Resume = () => <>
         With a quick head for learning and a commitment to continuous self-education, I thrive in
         fast-paced, dynamic environments.
         My love for teaching and working with diverse teams allows me to contribute to the
-        project's success while mentoring others.
+        project&apos;s success while mentoring others.
         I prioritize creating clean, maintainable codebases that follow best practices and is
         always mindful of scalability and security.
-        I'm excited to leverage cutting-edge technologies to deliver efficient solutions that
+        I&apos;m excited to leverage cutting-edge technologies to deliver efficient solutions that
         exceed all expectations.
       </Typography>
     </Grid>
