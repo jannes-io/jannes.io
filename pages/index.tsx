@@ -11,7 +11,7 @@ const Home: NextPage = () => <>
       <p>Senior fullstack developer @ A&C systems</p>
       <Box display="flex" gap={2}>
         <Link sx={{ display: 'inherit' }} href="/resume"><ArrowRight />Resume</Link>
-        <Link sx={{ display: 'inherit' }} href="/portfolio"><ArrowRight />Portfolio</Link>
+        <Link sx={{ display: 'inherit' }} href="/portfolio/index.html"><ArrowRight />Portfolio</Link>
       </Box>
     </Grid>
     <Grid item xs={4}>

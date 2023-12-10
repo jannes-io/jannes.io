@@ -8,7 +8,7 @@ const Resume = () => <>
     {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
     <a style={{ color: '#d14146' }} href="/" className="hide-print">Website</a>
     {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-    <a style={{ color: '#d14146' }} href="/portfolio" className="hide-print">Portfolio</a>
+    <a style={{ color: '#d14146' }} href="/portfolio/index.html" className="hide-print">Portfolio</a>
   </Box>
   <Grid container spacing={4} direction="row-reverse" py={4}>
     <Grid item xs={12} className="show-print">
