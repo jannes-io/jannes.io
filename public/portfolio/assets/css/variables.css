@@ -1,0 +1,7 @@
+:root {
+    --color-primary: rgb(209, 65, 70);
+    --color-secondary: rgb(27, 58, 54);
+    --color-text: white;
+    --color-text-sub: rgba(255, 255, 255, 0.8);
+    --color-bg: #030303;
+}

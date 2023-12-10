@@ -85,13 +85,11 @@ const App: React.FC<MyAppProps> = ({
               <Nav variant="caption">
                 <Link color="inherit" href="https://github.com/jannes-io">GitHub</Link>
                 |
-                <Link color="inherit" href="https://twitter.com/jannesio">Twitter</Link>
-                |
                 <Link color="inherit"
                   href="https://www.linkedin.com/in/jannes-drijkoningen/">LinkedIn</Link>
                 |
                 <img src="/img/discord.svg" alt="" width={16} height={16} />
-                pvtHenk#8008
+                @pvtHenk
               </Nav>
             </nav>
           </>}

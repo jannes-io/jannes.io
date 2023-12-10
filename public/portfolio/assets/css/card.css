@@ -1,0 +1,53 @@
+.card {
+    position: relative;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    background: linear-gradient(
+        45deg,
+        rgba(110, 35, 35, 0.6) 0%,
+        rgba(52, 52, 52, 0.3) 100%
+    );
+    border: solid 1px rgba(101, 32, 103, 0.2);
+    border-radius: 1em;
+    box-shadow: 0 0 24px -5px rgba(209, 65, 70, 0.25);
+}
+
+.card-alt {
+    background: linear-gradient(
+        -45deg,
+        rgba(35, 35, 110, 0.6) 0%,
+        rgba(52, 52, 52, 0.3) 100%
+    );
+    border: solid 1px rgba(103, 32, 101, 0.2);
+    border-radius: 1em;
+    box-shadow: 0 0 24px -5px rgba(70, 65, 209, 0.25);
+}
+
+.card:not(:hover) .card-highlight {
+    opacity: 0;
+
+    transition: opacity 250ms ease-in-out;
+}
+
+.card-highlight {
+    opacity: 0.3;
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    z-index: -1;
+    filter: blur(500px);
+
+    transition: opacity 250ms ease-in-out;
+}
+
+.card-overlay {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
