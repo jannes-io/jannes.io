@@ -8,7 +8,7 @@ const Home: NextPage = () => <>
   <Grid container pb={4}>
     <Grid item xs={8}>
       <Typography variant="subtitle2">About me:</Typography>
-      <p>Senior fullstack developer @ A&C systems</p>
+      <p>Senior fullstack developer @ HappIT</p>
       <Box display="flex" gap={2}>
         <Link sx={{ display: 'inherit' }} href="/resume"><ArrowRight />Resume</Link>
         <Link sx={{ display: 'inherit' }} href="/portfolio/index.html"><ArrowRight />Portfolio</Link>
